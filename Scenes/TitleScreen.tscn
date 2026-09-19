@@ -2,10 +2,11 @@
 
 [ext_resource type="FontFile" uid="uid://cieb216psm3ut" path="res://Art/oldenglishtextmt.ttf" id="1_8l4an"]
 [ext_resource type="PackedScene" uid="uid://cwbr7xaya56o8" path="res://Scenes/PlayButton.tscn" id="1_uebgo"]
-[ext_resource type="Script" uid="uid://bi6wcadnep3ig" path="res://Scenes/CreditsButton.cs" id="2_emot1"]
-[ext_resource type="Script" uid="uid://cdhwxyltprja4" path="res://Scenes/PlayButton.cs" id="4_i5sur"]
+[ext_resource type="Script" uid="uid://cdhwxyltprja4" path="res://Scripts/PlayButton.cs" id="4_5c2t2"]
+[ext_resource type="Script" uid="uid://ptybt3dshic2" path="res://Scripts/OptionsButton.cs" id="5_bawyk"]
 [ext_resource type="Script" uid="uid://b8cstatlvhnui" path="res://Scripts/ExitButton.cs" id="5_emot1"]
 [ext_resource type="VideoStream" uid="uid://qw3p5e0mwk60" path="res://Art/kimaradas.ogv" id="6_7whhf"]
+[ext_resource type="Script" uid="uid://bi6wcadnep3ig" path="res://Scripts/CreditsButton.cs" id="6_qfyqv"]
 [ext_resource type="AudioStream" uid="uid://d18cqfxl158l0" path="res://Art/kimaradas.ogg" id="7_7whhf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_broyc"]
@@ -108,35 +109,32 @@ alignment = 1
 [node name="PlayButton" parent="PanelContainer/VBoxContainer" unique_id=1246035958 instance=ExtResource("1_uebgo")]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_broyc")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_q8fpg")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8l4an")
-script = ExtResource("4_i5sur")
+script = ExtResource("4_5c2t2")
 
 [node name="OptionsButton" parent="PanelContainer/VBoxContainer" unique_id=790644320 instance=ExtResource("1_uebgo")]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_broyc")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_q8fpg")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8l4an")
 text = " Beállítások "
+script = ExtResource("5_bawyk")
 
 [node name="CreditsButton" parent="PanelContainer/VBoxContainer" unique_id=313418822 instance=ExtResource("1_uebgo")]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_broyc")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_q8fpg")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8l4an")
 text = "Alkotók"
-script = ExtResource("2_emot1")
+script = ExtResource("6_qfyqv")
 
 [node name="ExitButton" parent="PanelContainer/VBoxContainer" unique_id=1169895768 instance=ExtResource("1_uebgo")]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_broyc")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_q8fpg")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8l4an")
@@ -148,5 +146,6 @@ stream = ExtResource("7_7whhf")
 autoplay = true
 
 [connection signal="pressed" from="PanelContainer/VBoxContainer/PlayButton" to="PanelContainer/VBoxContainer/PlayButton" method="OnPlayPressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/OptionsButton" to="PanelContainer/VBoxContainer/OptionsButton" method="OnOptionsPressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/CreditsButton" to="PanelContainer/VBoxContainer/CreditsButton" method="OnCreditsPressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/ExitButton" to="PanelContainer/VBoxContainer/ExitButton" method="OnExitPressed"]

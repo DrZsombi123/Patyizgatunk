@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://cwbr7xaya56o8" path="res://Scenes/PlayButton.tscn" id="4_uy3b0"]
 [ext_resource type="Script" uid="uid://bctaccqe0kg8o" path="res://Scripts/BackButton.cs" id="5_iynit"]
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uebgo"]
+texture = ExtResource("2_uy3b0")
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ufi4l"]
 bg_color = Color(0, 0, 0, 0.56078434)
 border_width_left = 2
@@ -17,9 +20,6 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uebgo"]
-texture = ExtResource("2_uy3b0")
 
 [node name="Credits" type="Control" unique_id=1157793102]
 layout_mode = 3
@@ -38,9 +38,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -225.0
-offset_top = -239.0
+offset_top = -310.0
 offset_right = 225.0
-offset_bottom = -138.0
+offset_bottom = -209.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
@@ -53,52 +53,6 @@ fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1198260657]
-layout_mode = 0
-offset_left = 374.0
-offset_top = 219.0
-offset_right = 777.0
-offset_bottom = 588.0
-size_flags_horizontal = 4
-size_flags_vertical = 8
-theme_override_constants/separation = 30
-
-[node name="JanosText" type="RichTextLabel" parent="VBoxContainer" unique_id=553056141]
-z_index = 1
-layout_mode = 2
-theme_override_fonts/normal_font = ExtResource("3_iynit")
-theme_override_font_sizes/normal_font_size = 60
-theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
-text = " Molnár János "
-fit_content = true
-autowrap_mode = 0
-
-[node name="ZsombiText" type="RichTextLabel" parent="VBoxContainer" unique_id=1363978286]
-z_index = 1
-layout_mode = 2
-theme_override_fonts/normal_font = ExtResource("3_iynit")
-theme_override_font_sizes/normal_font_size = 60
-theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
-text = " Sándor Gergö "
-fit_content = true
-autowrap_mode = 0
-
-[node name="GergoText" type="RichTextLabel" parent="VBoxContainer" unique_id=1294237097]
-z_index = 1
-layout_mode = 2
-theme_override_fonts/normal_font = ExtResource("3_iynit")
-theme_override_font_sizes/normal_font_size = 60
-theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
-text = " Girán Zsombor "
-fit_content = true
-autowrap_mode = 0
-
-[node name="BackButton" parent="VBoxContainer" unique_id=1246035958 instance=ExtResource("4_uy3b0")]
-z_index = 1
-layout_mode = 2
-text = "Vissza"
-script = ExtResource("5_iynit")
-
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=166265959]
 layout_mode = 1
 anchors_preset = 15
@@ -108,4 +62,46 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_uebgo")
 
-[connection signal="pressed" from="VBoxContainer/BackButton" to="VBoxContainer/BackButton" method="OnBackPressed"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1198260657]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 30
+
+[node name="JanosText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=553056141]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Molnár János "
+fit_content = true
+autowrap_mode = 0
+
+[node name="ZsombiText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=1363978286]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Girán Zsombor "
+fit_content = true
+autowrap_mode = 0
+
+[node name="GergoText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=1294237097]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Sándor Gergö"
+fit_content = true
+autowrap_mode = 0
+
+[node name="BackButton" parent="PanelContainer/VBoxContainer" unique_id=1246035958 instance=ExtResource("4_uy3b0")]
+z_index = 1
+layout_mode = 2
+text = "Vissza"
+script = ExtResource("5_iynit")
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BackButton" to="PanelContainer/VBoxContainer/BackButton" method="OnBackPressed"]
