@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://cwbr7xaya56o8"]
+
+[node name="Play Button" type="Button" unique_id=1246035958]
+text = "Játék"
