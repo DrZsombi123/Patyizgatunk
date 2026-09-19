@@ -42,7 +42,7 @@ corner_radius_bottom_left = 5
 [node name="PlayButton" type="Button" unique_id=1246035958]
 theme_override_colors/icon_pressed_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("1_iqp5p")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_xdsjw")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_em7tm")
 theme_override_styles/hover = SubResource("StyleBoxFlat_iqp5p")
