@@ -1,4 +1,49 @@
 [gd_scene format=3 uid="uid://cwbr7xaya56o8"]
 
-[node name="Play Button" type="Button" unique_id=1246035958]
+[ext_resource type="FontFile" uid="uid://fv8jvra3jfms" path="res://Art/CloisterBlack.ttf" id="1_iqp5p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xdsjw"]
+bg_color = Color(0, 0, 0, 0.7647059)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+border_blend = true
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_em7tm"]
+bg_color = Color(1, 1, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0, 1)
+border_blend = true
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iqp5p"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="PlayButton" type="Button" unique_id=1246035958]
+theme_override_colors/icon_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_iqp5p")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_xdsjw")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_em7tm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_iqp5p")
 text = "Játék"
