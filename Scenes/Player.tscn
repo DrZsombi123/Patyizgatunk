@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c8vm25of4d8v4" path="res://Scripts/Player.cs" id="1_rpqav"]
 [ext_resource type="Texture2D" uid="uid://dj2b58xhgcucd" path="res://icon.svg" id="2_kyqiw"]
+[ext_resource type="Texture2D" path="res://Art/hair_bad.png" id="3_hbad"]
+[ext_resource type="Texture2D" path="res://Art/hair_good.png" id="4_hgood"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_plysq"]
 
@@ -10,8 +12,11 @@ radius = 50.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1213944438]
 position = Vector2(600, 350)
+motion_mode = 1
 up_direction = Vector2(0, 1)
 script = ExtResource("1_rpqav")
+BadHair = ExtResource("3_hbad")
+GoodHair = ExtResource("4_hgood")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1881344279]
 shape = SubResource("RectangleShape2D_plysq")
@@ -19,9 +24,17 @@ shape = SubResource("RectangleShape2D_plysq")
 [node name="Visual" type="Node2D" parent="." unique_id=1719142765]
 
 [node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1302736486]
+scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_kyqiw")
+
+[node name="Hair" type="Sprite2D" parent="Visual"]
+position = Vector2(0, -15)
+texture = ExtResource("3_hbad")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=142844679]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea" unique_id=693730607]
 shape = SubResource("CircleShape2D_dla85")
+
+[node name="HairTimer" type="Timer" parent="."]
+one_shot = true

@@ -11,7 +11,16 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public float JumpDuration { get; set; } = 0.45f;
 
+	[Export]
+	public Texture2D BadHair { get; set; }
+
+	[Export]
+	public Texture2D GoodHair { get; set; }
+
 	private Node2D _visual;
+	private Sprite2D _hair;
+	private Timer _hairTimer;
+	private int _hairAura = 0;
 	private Area2D _interactArea;
 	private CollisionShape2D _bodyCollision;
 
@@ -27,6 +36,29 @@ public partial class Player : CharacterBody2D
 		_bodyCollision = GetNode<CollisionShape2D>("CollisionShape2D");
 
 		_visualStartPosition = _visual.Position;
+
+		_hair = GetNode<Sprite2D>("Visual/Hair");
+		_hairTimer = GetNode<Timer>("HairTimer");
+		_hairTimer.Timeout += OnHairGrownBack;
+	}
+
+	// Ferike vág: pacek séró, "duration" mp múlva visszanő a rossz haj.
+	public void GetHaircut(float duration, int aura)
+	{
+		if (_hairTimer.IsStopped())
+		{
+			_hairAura = aura;
+			GD.Print($"Aura +{aura}"); // TODO: Statisztika (Gergő) aura
+		}
+
+		_hair.Texture = GoodHair;
+		_hairTimer.Start(duration);
+	}
+
+	private void OnHairGrownBack()
+	{
+		_hair.Texture = BadHair;
+		GD.Print($"Aura -{_hairAura}"); // TODO: Statisztika (Gergő) aura
 	}
 
 	public override void _PhysicsProcess(double delta)
