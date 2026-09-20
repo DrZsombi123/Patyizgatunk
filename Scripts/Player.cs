@@ -22,6 +22,11 @@ public partial class Player : CharacterBody2D
 
 	[Export]
 	public int Money { get; set; } = 20000;   // ponytail: nincs kereset, kaszinó/meló majd hozza
+	[Signal] public delegate void AuraChangedEventHandler(int total);
+
+public int Aura { get; private set; } = 0;
+
+
 
 	public bool HasCarKey { get; set; } = false;   // Brendontól lehet elkérni
 
@@ -36,6 +41,9 @@ public partial class Player : CharacterBody2D
 	private System.Collections.Generic.Dictionary<Sprite2D, Vector2> _parts;
 	private float _stepTime = 0.0f;
 
+	// ÚJ: részegség rendszer (a Player gyereke: "DrunkSystem" Node)
+	private DrunkSystem _drunk;
+
 	// ponytail: egyszerre egy szer hat, az új felülírja a régit
 	private Timer _effectTimer;
 	private float _speedMultiplier = 1.0f;
@@ -46,6 +54,13 @@ public partial class Player : CharacterBody2D
 	private float _jumpTime = 0.0f;
 
 	private Vector2 _visualStartPosition;
+
+	public void AddAura(int amount)
+	{
+		Aura += amount;
+		EmitSignal(SignalName.AuraChanged, Aura);
+	}
+
 
 	public override void _Ready()
 	{
@@ -60,6 +75,8 @@ public partial class Player : CharacterBody2D
 		_hairTimer = GetNode<Timer>("HairTimer");
 		_hairTimer.Timeout += OnHairGrownBack;
 
+		_drunk = GetNode<DrunkSystem>("DrunkSystem");   // ÚJ
+
 		_effectTimer = new Timer { OneShot = true };
 		AddChild(_effectTimer);
 		_effectTimer.Timeout += () => { _speedMultiplier = 1.0f; _wobble = 0.0f; };
@@ -67,7 +84,8 @@ public partial class Player : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
-		if (Dialogue.IsOpen || InCar || Dialogue.Current == null)
+		// ÚJ: kiütés közben nem lehet beszélgetni
+		if (Dialogue.IsOpen || InCar || _drunk.IsBlackedOut || Dialogue.Current == null)
 			return;
 
 		if (!Input.IsActionJustPressed("pickup"))
@@ -124,11 +142,14 @@ public partial class Player : CharacterBody2D
 	// A hotbar innen süti el a tárgyat. false: nem használható (pl. kocsikulcs).
 	public bool Use(string item)
 	{
+		if (_drunk.IsBlackedOut)   // ÚJ: kiütve nem lehet inni/használni
+			return false;
+
 		switch (item)
 		{
 			case "patyi": TakePatyi(); return true;
-			case "jack":
-			case "finlandia": DrinkPia(); return true;
+			case "jack": DrinkPia(15.0f); return true;        // ÚJ: mennyit ad a részegséghez (%)
+			case "finlandia": DrinkPia(20.0f); return true;    // ÚJ
 			case "energia": DrinkEnergy(); return true;
 		}
 
@@ -141,16 +162,15 @@ public partial class Player : CharacterBody2D
 		_speedMultiplier = 1.7f;
 		_wobble = 0.0f;
 		_effectTimer.Start(45.0f);
-		GD.Print("Aura +25"); // TODO: Statisztika (Gergő) aura
+		AddAura(25);
 	}
 
-	// Kemény pia a pulttól (Finlandia, Jack): lassabb, és kacsázik a járás.
-	public void DrinkPia()
+	// Kemény pia a pulttól (Finlandia, Jack): a részegség sáv töltődik,
+	// a lassulást/kacsázást már a DrunkSystem adja (ÚJ: nincs több _wobble/_speedMultiplier itt).
+	public void DrinkPia(float drunkAmount)
 	{
-		_speedMultiplier = 0.85f;
-		_wobble = 0.35f;
-		_effectTimer.Start(60.0f);
-		GD.Print("Aura +5"); // TODO: Statisztika (Gergő) aura
+		_drunk.AddDrunk(drunkAmount);
+		AddAura(5);
 	}
 
 	// Energiaital a boltból: kicsit gyorsabb, de nem zavarja össze.
@@ -167,7 +187,7 @@ public partial class Player : CharacterBody2D
 		if (_hairTimer.IsStopped())
 		{
 			_hairAura = aura;
-			GD.Print($"Aura +{aura}"); // TODO: Statisztika (Gergő) aura
+			AddAura(aura);
 		}
 
 		_hair.Texture = GoodHair;
@@ -177,15 +197,16 @@ public partial class Player : CharacterBody2D
 	private void OnHairGrownBack()
 	{
 		_hair.Texture = BadHair;
-		GD.Print($"Aura -{_hairAura}"); // TODO: Statisztika (Gergő) aura
+		AddAura(-_hairAura);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		_time += (float)delta;
 
-		// kocsiban ülünk vagy dumálunk: nem mozgunk, a végtagok is nyugalomba állnak
-		if (InCar || Dialogue.IsOpen)
+		// kocsiban ülünk vagy dumálunk (ÚJ: vagy ki vagyunk ütve): nem mozgunk,
+		// a végtagok is nyugalomba állnak
+		if (InCar || Dialogue.IsOpen || _drunk.IsBlackedOut)
 		{
 			Velocity = Vector2.Zero;
 			Step.Apply(_parts, _stepTime, 0.0f);
@@ -202,11 +223,14 @@ public partial class Player : CharacterBody2D
 			"move_left",
 			"move_right",
 			"move_up",
-            "move_down"
+			"move_down"
 		);
 
 		if (_wobble > 0.0f)
 			direction = direction.Rotated(Mathf.Sin(_time * 4.0f) * _wobble);
+
+		// ÚJ: részegségtől függően elcsúszik / összevissza megy az irány
+		direction = _drunk.ModifyInput(direction, GetPhysicsProcessDeltaTime());
 
 		Velocity = direction * MoveSpeed * _speedMultiplier;
 
