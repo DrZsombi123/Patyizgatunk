@@ -1,6 +1,6 @@
 using Godot;
 
-// Brendon öreg BMW-je: F-fel be/ki, de csak kocsikulccsal (Brendontól lehet elkérni).
+// Brendon Mercedes C-osztálya: F-fel be/ki, de csak kocsikulccsal (Brendontól lehet elkérni).
 // ponytail: vezetés közben a player a kocsin ül rejtve, így a kamera és a követő
 // Brendon marad a helyén, nem kell külön kocsi-kamera.
 public partial class Car : CharacterBody2D
@@ -16,6 +16,7 @@ public partial class Car : CharacterBody2D
 
 	private Label _hint;
 	private AudioStreamPlayer _exitSfx;
+	private AudioStreamPlayer _enterSfx;
 	private Player _near;
 	private Player _driver;
 
@@ -23,6 +24,7 @@ public partial class Car : CharacterBody2D
 	{
 		_hint = GetNode<Label>("Hint");
 		_exitSfx = GetNode<AudioStreamPlayer>("ExitSfx");
+		_enterSfx = GetNode<AudioStreamPlayer>("EnterSfx");
 
 		var area = GetNode<Area2D>("Area");
 		area.BodyEntered += body => { if (body is Player player) { _near = player; UpdateHint(); } };
@@ -67,6 +69,7 @@ public partial class Car : CharacterBody2D
 		_near = null;
 
 		player.SetInCar(true);
+		_enterSfx.Play();
 
 		// Brendon is beszáll: a kocsi mögött jön tovább, csak nem látszik
 		if (Passenger != null)

@@ -1,4 +1,4 @@
-using Godot;
+﻿using Godot;
 
 public partial class Player : CharacterBody2D
 {
@@ -102,6 +102,20 @@ public partial class Player : CharacterBody2D
 		_speedMultiplier = 1.45f;
 		_wobble = 0.5f;
 		_effectTimer.Start(2.5f);
+	}
+
+	// A hotbar innen süti el a tárgyat. false: nem használható (pl. kocsikulcs).
+	public bool Use(string item)
+	{
+		switch (item)
+		{
+			case "patyi": TakePatyi(); return true;
+			case "jack":
+			case "finlandia": DrinkPia(); return true;
+			case "energia": DrinkEnergy(); return true;
+		}
+
+		return false;
 	}
 
 	// Kristályos por a sikátorból: felpörget.

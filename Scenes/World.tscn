@@ -30,10 +30,13 @@
 [ext_resource type="Script" path="res://Scripts/Car.cs" id="16_car"]
 [ext_resource type="Texture2D" path="res://Art/kuka.png" id="17_kuka"]
 [ext_resource type="Texture2D" path="res://Art/kukabuvar.png" id="18_kukabuvar"]
-[ext_resource type="Texture2D" path="res://Art/bmw.png" id="19_bmw"]
+[ext_resource type="Texture2D" path="res://Art/merci.png" id="19_merci"]
 [ext_resource type="AudioStream" path="res://Art/autokiszallas.mp3" id="20_kiszallas"]
+[ext_resource type="AudioStream" path="res://Art/merci.mp3" id="23_merci_sfx"]
 [ext_resource type="AudioStream" path="res://Art/jack.mp3" id="21_jack"]
 [ext_resource type="Script" path="res://Scripts/Dancer.cs" id="20_dancer"]
+[ext_resource type="Script" path="res://Scripts/UltraPatyi.cs" id="24_ultra"]
+[ext_resource type="Script" path="res://Scripts/Hotbar.cs" id="22_hotbar"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tiles"]
 texture = ExtResource("2_tiles")
@@ -916,13 +919,14 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("9_hbrendon")
 
 [node name="Label" type="Label" parent="Brendon"]
-offset_left = -80.0
-offset_top = -96.0
-offset_right = 80.0
+offset_left = -100.0
+offset_top = -104.0
+offset_right = 100.0
 offset_bottom = -34.0
+theme_override_colors/font_color = Color(1, 0.79, 0.16, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 10
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 16
 text = "Lakatos Brendon"
 horizontal_alignment = 1
 vertical_alignment = 2
@@ -1399,7 +1403,7 @@ stream = ExtResource("21_jack")
 [node name="Npc" type="Node2D" parent="Casino/Csapos" node_paths=PackedStringArray("Sound")]
 script = ExtResource("13_npc")
 Lines = PackedStringArray("Egy Jack, jéggel? Egészségedre!", "A ház nem fizeti. De jeget adok.", "Lassan idd, hosszú az éjszaka.")
-Options = PackedStringArray("Egy Jack Danielst kérek.|pia|3500|Egészségedre. Lassan idd.", "Csak vizet.||0|Vizet a mosdóban találsz.")
+Options = PackedStringArray("Egy Jack Danielst kérek.|jack|3500|Egészségedre. Lassan idd.", "Csak vizet.||0|Vizet a mosdóban találsz.")
 Sound = NodePath("../Sfx")
 
 [node name="Npc" type="Node2D" parent="Szorakozohely/DJ"]
@@ -1410,7 +1414,7 @@ Options = PackedStringArray("Tedd fel a kedvencemet!||0|Kérés nincs. Basszus v
 [node name="Npc" type="Node2D" parent="Szorakozohely/Csapos"]
 script = ExtResource("13_npc")
 Lines = PackedStringArray("Finlandia, dupla? Ne nézz így rám.", "Ez már a hányadik, főnök?", "Kifelé menet ne a falnak menj.")
-Options = PackedStringArray("Egy Finlandiát kérek.|pia|3500|Tessék. Kifelé menet ne a falnak menj.", "Csak vizet.||0|Víz nincs. Van Finlandia.")
+Options = PackedStringArray("Egy Finlandiát kérek.|finlandia|3500|Tessék. Kifelé menet ne a falnak menj.", "Csak vizet.||0|Víz nincs. Van Finlandia.")
 
 [node name="Npc" type="Node2D" parent="Szorakozohely/Tancos1"]
 script = ExtResource("13_npc")
@@ -1471,6 +1475,9 @@ vertical_alignment = 2
 [node name="Dialogue" type="CanvasLayer" parent="."]
 script = ExtResource("14_dialogue")
 
+[node name="Hotbar" type="CanvasLayer" parent="."]
+script = ExtResource("22_hotbar")
+
 [node name="Kuka" type="StaticBody2D" parent="."]
 position = Vector2(944, 544)
 
@@ -1504,27 +1511,30 @@ shape = SubResource("RectangleShape2D_kuka")
 position = Vector2(0, -17)
 texture = ExtResource("17_kuka")
 
-[node name="Bmw" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Passenger")]
+[node name="Merci" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Passenger")]
 position = Vector2(1296, 752)
 motion_mode = 1
 script = ExtResource("16_car")
 Passenger = NodePath("../Brendon")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bmw"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Merci"]
 shape = SubResource("RectangleShape2D_car")
 
-[node name="Sprite2D" type="Sprite2D" parent="Bmw"]
-texture = ExtResource("19_bmw")
+[node name="Sprite2D" type="Sprite2D" parent="Merci"]
+texture = ExtResource("19_merci")
 
-[node name="ExitSfx" type="AudioStreamPlayer" parent="Bmw"]
+[node name="ExitSfx" type="AudioStreamPlayer" parent="Merci"]
 stream = ExtResource("20_kiszallas")
 
-[node name="Area" type="Area2D" parent="Bmw"]
+[node name="EnterSfx" type="AudioStreamPlayer" parent="Merci"]
+stream = ExtResource("23_merci_sfx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bmw/Area"]
+[node name="Area" type="Area2D" parent="Merci"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Merci/Area"]
 shape = SubResource("CircleShape2D_car")
 
-[node name="Hint" type="Label" parent="Bmw"]
+[node name="Hint" type="Label" parent="Merci"]
 offset_left = -90.0
 offset_top = -76.0
 offset_right = 90.0
@@ -1596,3 +1606,10 @@ color = Color(1, 0.3, 0.75, 1)
 energy = 0.5
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 1.5
+
+[node name="UltraPatyi" type="Area2D" parent="."]
+position = Vector2(720, 496)
+script = ExtResource("24_ultra")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UltraPatyi"]
+shape = SubResource("RectangleShape2D_ferike")

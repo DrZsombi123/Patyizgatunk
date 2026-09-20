@@ -1,4 +1,4 @@
-using Godot;
+﻿using Godot;
 
 // Beszélhető NPC. A player InteractArea-ja a szülő testet érzékeli, E -> felugró ablak.
 // A név a testvér "Label"-ből jön, a szövegek a Lines-ból körbe.
@@ -55,17 +55,28 @@ public partial class Npc : Node2D
 		if (player.Money < price)
 			return $"Nincs meg a {price} Ft. Gyere vissza, ha összejött.";
 
-		player.Money -= price;
-
 		// ponytail: pár hatás van, ezért switch. Ha sok lesz, exportált értékek jönnek.
+		// A szerek a hotbarba kerülnek, onnan lehet elsütni őket (Q).
 		switch (effect)
 		{
-			case "patyi": player.TakePatyi(); break;
-			case "pia": player.DrinkPia(); break;
-			case "energia": player.DrinkEnergy(); break;
+			case "patyi":
+			case "jack":
+			case "finlandia":
+			case "energia":
+			case "kulcs":
+				// tele a csík: nem vesszük el a pénzt sem
+				if (!Hotbar.Current.Add(effect))
+					return "Tele a zsebed, Márió. Használj el előbb valamit.";
+
+				if (effect == "kulcs")
+					player.HasCarKey = true;
+
+				break;
+
 			case "hajvagas": player.GetHaircut(120.0f, 10); break;
-			case "kulcs": player.HasCarKey = true; break;
 		}
+
+		player.Money -= price;
 
 		if (effect != "" && Sound != null)
 			Sound.Play();
