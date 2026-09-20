@@ -13,7 +13,7 @@ public partial class DrunkEffects : CanvasLayer
 	private ColorRect _nauseaRect = null!;
 	private ColorRect _blackoutRect = null!;
 	private ShaderMaterial _mat = null!;
-	private Tween? _fadeTween;
+	private Tween _fadeTween;
 
 	private float _targetIntensity, _targetBlindness;
 	private float _intensity, _blindness;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 /// <summary>
@@ -29,11 +30,19 @@ public partial class DrunkSystem : Node
 	[Export] public float FadeInTime = 1.5f;     // wake up
 	[Export] public string WakeUpGroup = "wakeup_points";
 
+	[ExportGroup("Vomit")]
+	[Export] public Texture2D VomitTexture { get; set; }
+	[Export] public Vector2 VomitOffset { get; set; } = new Vector2(0f, 6f);   // + Y = lejjebb (a láb alá)
+	[Export] public float VomitScale { get; set; } = 1.0f;
+	[Export] public int MaxPuddles { get; set; } = 20;   // 0 = korlátlan, a legrégebbi tűnik el először
+	[Export] public float VomitSortLift { get; set; } = 16.0f;   // ennyivel a tócsa teteje FÖLÉ kerül a rendezési pont (y-sort)
+
 	public float Drunkness { get; private set; }
 	public bool IsBlackedOut { get; private set; }
 
 	private Node2D _player = null!;
 	private readonly RandomNumberGenerator _rng = new();
+	private readonly List<Sprite2D> _puddles = new();
 
 	// movement-distortion state
 	private float _time;
@@ -108,11 +117,11 @@ public partial class DrunkSystem : Node
 
 	public string GetStatusName()
 	{
-		if (Drunkness < NauseaStart) return "Józan";
-		if (Drunkness < DisorientStart) return "Becsiccsentve";
-		if (Drunkness < ChaosStart) return "Részeg";
-		if (Drunkness < BlindStart) return "Atomrészeg";
-		return "Fullgatya";
+		if (Drunkness < NauseaStart) return "Sober";
+		if (Drunkness < DisorientStart) return "Buzzed";
+		if (Drunkness < ChaosStart) return "Tipsy";
+		if (Drunkness < BlindStart) return "Drunk";
+		return "Wasted";
 	}
 
 	// ---------- Internals ----------
@@ -137,9 +146,10 @@ public partial class DrunkSystem : Node
 		EmitSignal(SignalName.BlackoutStarted, FadeOutTime);
 		await Wait(FadeOutTime);
 
-		// 2) while the screen is black: drop the bar and move the player
+		// 2) while the screen is black: drop the bar, move the player, leave a present
 		SetDrunkness(BlackoutResetValue);
 		MoveToRandomWakeSpot();
+		SpawnVomit();
 		await Wait(BlackHoldTime);
 
 		// 3) wake up
@@ -163,5 +173,48 @@ public partial class DrunkSystem : Node
 
 		if (_player is CharacterBody2D body)
 			body.Velocity = Vector2.Zero;
+	}
+
+	// Tócsa a földön, pont ahol felkelünk. Csak látvány, nincs ütközés, nem hat semmire.
+	private void SpawnVomit()
+	{
+		if (VomitTexture == null) return;
+
+		Node parent = _player.GetParent();
+		if (parent == null) return;
+
+		float s = Mathf.Max(VomitScale, 0.01f);
+
+		// Y-sortnál az számít, ki van "lejjebb". Hogy a tócsa MINDIG a földön legyen és
+		// mindenki rálépjen, a node-ot a tócsa teteje fölé tesszük (ez a rendezési pont),
+		// a textúrát pedig az Offsettel visszatoljuk oda, ahol látszania kell.
+		float lift = VomitTexture.GetHeight() * s * 0.5f + VomitSortLift;
+
+		var puddle = new Sprite2D
+		{
+			Texture = VomitTexture,
+			Offset = new Vector2(VomitOffset.X, lift / s),
+			Scale = new Vector2(s, s),
+			FlipH = _rng.Randf() < 0.5f
+		};
+
+		// Ugyanabba a szülőbe kerül, mint a játékos, és közvetlenül elé a sorrendben
+		// (y-sort nélkül is a játékos rajzolódik rá a tócsára).
+		parent.AddChild(puddle);
+		parent.MoveChild(puddle, _player.GetIndex());
+
+		Vector2 basePos = _player.GlobalPosition;
+		puddle.GlobalPosition = new Vector2(basePos.X, basePos.Y + VomitOffset.Y * s - lift);
+
+		_puddles.Add(puddle);
+
+		if (MaxPuddles > 0 && _puddles.Count > MaxPuddles)
+		{
+			Sprite2D oldest = _puddles[0];
+			_puddles.RemoveAt(0);
+
+			if (IsInstanceValid(oldest))
+				oldest.QueueFree();
+		}
 	}
 }

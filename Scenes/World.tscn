@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dwh0l28m0vro0" path="res://Scripts/DrunkSystem.cs" id="3_bbwj2"]
 [ext_resource type="Script" uid="uid://dulyhjddxr687" path="res://Scripts/Door.cs" id="3_door"]
 [ext_resource type="Shader" uid="uid://b7yh8q4gbf6sa" path="res://Art/nausea.gdshader" id="3_uvb3s"]
+[ext_resource type="Texture2D" uid="uid://chsssvf5603bb" path="res://Art/vomit.png" id="4_ivbkn"]
 [ext_resource type="Script" uid="uid://buuhb2s6famfl" path="res://Scripts/DrunkEffects.cs" id="4_ivfu3"]
 [ext_resource type="Texture2D" uid="uid://byclmp1au7n2c" path="res://Art/ferike.png" id="5_ferike"]
 [ext_resource type="Script" uid="uid://r0tx1voj4qkq" path="res://Scripts/DayNight.cs" id="6_daynight"]
@@ -816,6 +817,7 @@ zoom = Vector2(2, 2)
 [node name="DrunkSystem" type="Node2D" parent="Player" unique_id=541539895]
 script = ExtResource("3_bbwj2")
 SoberRate = 0.3
+VomitTexture = ExtResource("4_ivbkn")
 
 [node name="DrunkEffects" type="CanvasLayer" parent="Player" unique_id=1173728018 node_paths=PackedStringArray("Drunk")]
 layer = 10
