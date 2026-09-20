@@ -13,11 +13,13 @@ public partial class BarberShop : Area2D
 	public int AuraBonus { get; set; } = 10;
 
 	private AudioStreamPlayer _music;
+	private AudioStreamPlayer _haircutSfx;
 	private Player _customer;
 
 	public override void _Ready()
 	{
 		_music = GetNode<AudioStreamPlayer>("Music");
+		_haircutSfx = GetNode<AudioStreamPlayer>("HaircutSfx");
 
 		BodyEntered += body => { if (body is Player) _music.Play(); };
 		BodyExited += body => { if (body is Player) _music.Stop(); };
@@ -29,6 +31,9 @@ public partial class BarberShop : Area2D
 	public override void _Process(double delta)
 	{
 		if (_customer != null && Input.IsActionJustPressed("pickup"))
+		{
 			_customer.GetHaircut(HairDuration, AuraBonus);
+			_haircutSfx.Play();
+		}
 	}
 }

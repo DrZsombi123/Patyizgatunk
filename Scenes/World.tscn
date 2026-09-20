@@ -11,8 +11,10 @@
 [ext_resource type="Texture2D" path="res://Art/head_ferike.png" id="8_hferike"]
 [ext_resource type="Texture2D" path="res://Art/sikator.png" id="10_sikator"]
 [ext_resource type="Script" path="res://Scripts/Follower.cs" id="11_follower"]
+[ext_resource type="Script" path="res://Scripts/Npc.cs" id="13_npc"]
 [ext_resource type="Script" path="res://Scripts/MusicRoom.cs" id="7_musicroom"]
 [ext_resource type="AudioStream" uid="uid://d18cqfxl158l0" path="res://Art/kimaradas.ogg" id="8_clubmusic"]
+[ext_resource type="AudioStream" path="res://Art/rajapacekom.wav" id="12_hajzene"]
 [ext_resource type="Texture2D" path="res://Art/csoves1.png" id="npc_csoves1"]
 [ext_resource type="Texture2D" path="res://Art/csoves2.png" id="npc_csoves2"]
 [ext_resource type="Texture2D" path="res://Art/csoves_alvo.png" id="npc_csoves_alvo"]
@@ -779,7 +781,7 @@ position = Vector2(880, 752)
 zoom = Vector2(2, 2)
 
 [node name="BarberDoor" type="Area2D" parent="." node_paths=PackedStringArray("Target")]
-position = Vector2(912, 720)
+position = Vector2(912, 726)
 script = ExtResource("3_door")
 Target = NodePath("../Fodraszat/Inside")
 
@@ -787,7 +789,7 @@ Target = NodePath("../Fodraszat/Inside")
 shape = SubResource("RectangleShape2D_door")
 
 [node name="BarberOutside" type="Marker2D" parent="."]
-position = Vector2(912, 752)
+position = Vector2(912, 760)
 
 [node name="Fodraszat" type="Area2D" parent="." node_paths=PackedStringArray("FerikeArea")]
 y_sort_enabled = true
@@ -799,6 +801,9 @@ position = Vector2(2944, 336)
 shape = SubResource("RectangleShape2D_room")
 
 [node name="Music" type="AudioStreamPlayer" parent="Fodraszat"]
+
+[node name="HaircutSfx" type="AudioStreamPlayer" parent="Fodraszat"]
+stream = ExtResource("12_hajzene")
 
 [node name="Inside" type="Marker2D" parent="Fodraszat"]
 position = Vector2(2928, 400)
@@ -881,7 +886,7 @@ vertical_alignment = 2
 
 [node name="Brendon" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Target")]
 position = Vector2(816, 752)
-collision_layer = 0
+collision_layer = 2
 collision_mask = 0
 motion_mode = 1
 script = ExtResource("11_follower")
@@ -1342,3 +1347,100 @@ theme_override_font_sizes/font_size = 16
 text = "SZÓRAKOZÓHELY"
 horizontal_alignment = 1
 vertical_alignment = 1
+[node name="Npc" type="Node2D" parent="Fodraszat/Ferike"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Ülj le, öcsém, csinálok belőled embert.", "A séró fél siker. A másik fele az aura.", "Máriót is én nyírtam. Nem látszik rajta?")
+
+[node name="Npc" type="Node2D" parent="Sikatorember"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Tessék. Kristálytiszta por, ropog a foga alatt.", "Friss szajré. Ne szívd el egyszerre.", "Ez a jó cucc. Csillog, mint a gyémánt.")
+Item = "patyi"
+Price = 5000
+
+[node name="Npc" type="Node2D" parent="Brendon"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Megyek utánad, Márió. Mindig.", "Van még {penz} Ft-od. Én számolom.", "Nekem is vegyél egyet, ne csak magadnak.")
+
+[node name="Npc" type="Node2D" parent="Park/CsovesPista"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Nincs egy százasod, főnök?", "Én is voltam ám valaki. Két hete.", "A pad az enyém. A kilátás a tiéd.")
+
+[node name="Npc" type="Node2D" parent="Park/CsovesJozsi"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Pista hazudik. Én vagyok a park királya.", "Hozzál egy sört, és mesélek.", "Itt csak fél szemmel szabad aludni.")
+
+[node name="Npc" type="Node2D" parent="Bolt/Elado"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Zsemle, virsli, energiaital. A többi elfogyott.", "Kártyát nem fogadunk el. Se szavakat.", "Ha lopsz, a kidobó a haverom.")
+
+[node name="Npc" type="Node2D" parent="Casino/Krupie"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("A ház mindig nyer. De te is próbálkozz.", "Piros vagy fekete? Nekem mindegy.", "Ne a sérót nézd, a lapokat.")
+
+[node name="Npc" type="Node2D" parent="Casino/Csapos"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Egy Finlandia, jéggel. Egészségedre!", "A ház nem fizeti. De jeget adok.", "Lassan idd, hosszú az éjszaka.")
+Item = "finlandia"
+Price = 3500
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/DJ"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Ez a szám rólad szól, csak még nem tudod.", "Kérés nincs. Basszus van.", "Reggel hatig nyomom. Utána te nyomod.")
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Csapos"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Finlandia, dupla. Ne nézz így rám.", "Ez már a hányadik, főnök?", "Kifelé menet ne a falnak menj.")
+Item = "finlandia"
+Price = 3500
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Tancos1"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Ne bámulj, táncolj!", "Jó a séród. Ki csinálta?")
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Tancos2"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Hol vetted azt a cipőt?", "Még egy kör, és hazamegyek. Talán.")
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Tancos3"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Nem hallak! Hangosabban!", "Ez a kedvenc számom. Mind az.")
+
+[node name="Npc" type="Node2D" parent="Kidobo"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("Cipő rendben. Arc... rendben.", "Bent ne kezdj semmit, kint ne fejezd be.", "Ha kiviszlek, nem fogsz emlékezni rá.")
+
+[node name="Label" type="Label" parent="Szorakozohely/Tancos1"]
+offset_left = -90.0
+offset_top = -76.0
+offset_right = 90.0
+offset_bottom = -24.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 10
+text = "Táncos"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Label" type="Label" parent="Szorakozohely/Tancos2"]
+offset_left = -90.0
+offset_top = -76.0
+offset_right = 90.0
+offset_bottom = -24.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 10
+text = "Táncos"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Label" type="Label" parent="Szorakozohely/Tancos3"]
+offset_left = -90.0
+offset_top = -76.0
+offset_right = 90.0
+offset_bottom = -24.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 10
+text = "Táncos"
+horizontal_alignment = 1
+vertical_alignment = 2

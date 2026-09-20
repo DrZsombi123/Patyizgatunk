@@ -41,6 +41,7 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_hbad")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=142844679]
+collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea" unique_id=693730607]
 shape = SubResource("CircleShape2D_dla85")
