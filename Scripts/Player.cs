@@ -3,13 +3,16 @@ using Godot;
 public partial class Player : CharacterBody2D
 {
 	[Export]
-	public float MoveSpeed { get; set; } = 220.0f;
+	public float MoveSpeed { get; set; } = 150.0f;
 
 	[Export]
 	public float JumpHeight { get; set; } = 20.0f;
 
 	[Export]
 	public float JumpDuration { get; set; } = 0.45f;
+
+	[Export]
+	public float StepRate { get; set; } = 7.0f;   // lépésütem teljes sebességnél (rad/s)
 
 	[Export]
 	public Texture2D BadHair { get; set; }
@@ -20,6 +23,10 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public int Money { get; set; } = 20000;   // ponytail: nincs kereset, kaszinó/meló majd hozza
 
+	public bool HasCarKey { get; set; } = false;   // Brendontól lehet elkérni
+
+	public bool InCar { get; private set; } = false;
+
 	private Node2D _visual;
 	private Sprite2D _hair;
 	private Timer _hairTimer;
@@ -27,6 +34,8 @@ public partial class Player : CharacterBody2D
 	private Area2D _interactArea;
 	private CollisionShape2D _bodyCollision;
 	private Npc _npc;
+	private System.Collections.Generic.Dictionary<Sprite2D, Vector2> _parts;
+	private float _stepTime = 0.0f;
 
 	// ponytail: egyszerre egy szer hat, az új felülírja a régit
 	private Timer _effectTimer;
@@ -46,6 +55,7 @@ public partial class Player : CharacterBody2D
 		_bodyCollision = GetNode<CollisionShape2D>("CollisionShape2D");
 
 		_visualStartPosition = _visual.Position;
+		_parts = Step.Parts(_visual);
 
 		_hair = GetNode<Sprite2D>("Visual/Hair");
 		_hairTimer = GetNode<Timer>("HairTimer");
@@ -71,8 +81,27 @@ public partial class Player : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
+		if (Dialogue.IsOpen || InCar || Dialogue.Current == null)
+			return;
+
 		if (_npc != null && Input.IsActionJustPressed("pickup"))
-			_npc.Interact(this);
+			Dialogue.Current.Open(_npc, this);
+	}
+
+	// Beültünk/kiszálltunk a kocsiból: a testünk ilyenkor nem mozog és nem ütközik.
+	public void SetInCar(bool value)
+	{
+		InCar = value;
+		_visual.Visible = !value;
+		_bodyCollision.SetDeferred(CollisionShape2D.PropertyName.Disabled, value);
+	}
+
+	// Kiugrott valaki a kukából: megiramodunk és kapkodunk egy kicsit.
+	public void Scare()
+	{
+		_speedMultiplier = 1.45f;
+		_wobble = 0.5f;
+		_effectTimer.Start(2.5f);
 	}
 
 	// Kristályos por a sikátorból: felpörget.
@@ -84,13 +113,21 @@ public partial class Player : CharacterBody2D
 		GD.Print("Aura +25"); // TODO: Statisztika (Gergő) aura
 	}
 
-	// Finlandia a pulttól: lassabb, és kacsázik a járás.
-	public void DrinkFinlandia()
+	// Kemény pia a pulttól (Finlandia, Jack): lassabb, és kacsázik a járás.
+	public void DrinkPia()
 	{
 		_speedMultiplier = 0.85f;
 		_wobble = 0.35f;
 		_effectTimer.Start(60.0f);
 		GD.Print("Aura +5"); // TODO: Statisztika (Gergő) aura
+	}
+
+	// Energiaital a boltból: kicsit gyorsabb, de nem zavarja össze.
+	public void DrinkEnergy()
+	{
+		_speedMultiplier = 1.25f;
+		_wobble = 0.0f;
+		_effectTimer.Start(30.0f);
 	}
 
 	// Ferike vág: pacek séró, "duration" mp múlva visszanő a rossz haj.
@@ -116,6 +153,14 @@ public partial class Player : CharacterBody2D
 	{
 		_time += (float)delta;
 
+		// kocsiban ülünk vagy dumálunk: nem mozgunk, a végtagok is nyugalomba állnak
+		if (InCar || Dialogue.IsOpen)
+		{
+			Velocity = Vector2.Zero;
+			Step.Apply(_parts, _stepTime, 0.0f);
+			return;
+		}
+
 		HandleMovement();
 		HandleJump((float)delta);
 	}
@@ -135,6 +180,13 @@ public partial class Player : CharacterBody2D
 		Velocity = direction * MoveSpeed * _speedMultiplier;
 
 		MoveAndSlide();
+
+		// a lépés üteme a tényleges sebességgel skálázódik (patyitól pörgősebb)
+		float pace = Velocity.Length() / MoveSpeed;
+
+		_stepTime += (float)GetPhysicsProcessDeltaTime() * StepRate * pace;
+
+		Step.Apply(_parts, _stepTime, pace > 0.05f ? 1.0f : 0.0f);
 	}
 
 	private void HandleJump(float delta)

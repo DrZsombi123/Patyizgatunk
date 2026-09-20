@@ -1,75 +1,75 @@
 using Godot;
 
-// Beszélhető NPC. A player InteractArea-ja a szülő testet érzékeli, E -> következő szöveg.
-// A szöveg a testvér "Label"-ben jelenik meg, ShowTime múlva visszaáll a név.
-// ponytail: nincs külön dialógus-UI, az NPC névtáblája a buborék.
+// Beszélhető NPC. A player InteractArea-ja a szülő testet érzékeli, E -> felugró ablak.
+// A név a testvér "Label"-ből jön, a szövegek a Lines-ból körbe.
+// Egy válaszlehetőség formátuma: "felirat|hatás|ár|válasz".
+// hatás: patyi, pia, energia, hajvagas, kulcs vagy üres (csak duma).
 public partial class Npc : Node2D
 {
 	[Export]
 	public string[] Lines { get; set; } = System.Array.Empty<string>();
 
 	[Export]
-	public string Item { get; set; } = "";     // "patyi" vagy "finlandia", üres = csak duma
+	public string[] Options { get; set; } = System.Array.Empty<string>();
 
 	[Export]
-	public int Price { get; set; } = 0;        // > 0 -> minden megszólítás vásárlás
+	public AudioStreamPlayer Sound { get; set; }   // sikeres vásárlásra szól, ha van
 
-	[Export]
-	public float ShowTime { get; set; } = 3.5f;
-
-	private Label _label;
 	private string _name = "";
-	private Timer _timer;
 	private int _next = 0;
 
 	public override void _Ready()
 	{
-		_label = GetParent().GetNodeOrNull<Label>("Label");
+		Label label = GetParent().GetNodeOrNull<Label>("Label");
+		_name = label != null ? label.Text : GetParent().Name;
+	}
 
-		if (_label != null)
+	public string DisplayName => _name;
+
+	public string Greeting()
+	{
+		return Lines.Length > 0 ? Lines[_next++ % Lines.Length] : "...";
+	}
+
+	public string[] OptionLabels()
+	{
+		var labels = new string[Options.Length];
+
+		for (int i = 0; i < Options.Length; i++)
+			labels[i] = Options[i].Split('|')[0];
+
+		return labels;
+	}
+
+	public string Choose(int index, Player player)
+	{
+		string[] parts = Options[index].Split('|');
+
+		string effect = parts.Length > 1 ? parts[1] : "";
+		int price = parts.Length > 2 ? parts[2].ToInt() : 0;
+		string reply = parts.Length > 3 ? parts[3] : "Aha.";
+
+		if (effect == "kulcs" && player.HasCarKey)
+			return "Nálad van a kulcs, Márió. Ne veszítsd el.";
+
+		if (player.Money < price)
+			return $"Nincs meg a {price} Ft. Gyere vissza, ha összejött.";
+
+		player.Money -= price;
+
+		// ponytail: pár hatás van, ezért switch. Ha sok lesz, exportált értékek jönnek.
+		switch (effect)
 		{
-			_name = _label.Text;
-			_label.AutowrapMode = TextServer.AutowrapMode.Word;
+			case "patyi": player.TakePatyi(); break;
+			case "pia": player.DrinkPia(); break;
+			case "energia": player.DrinkEnergy(); break;
+			case "hajvagas": player.GetHaircut(120.0f, 10); break;
+			case "kulcs": player.HasCarKey = true; break;
 		}
 
-		_timer = new Timer { OneShot = true };
-		AddChild(_timer);
-		_timer.Timeout += () => { if (_label != null) _label.Text = _name; };
-	}
+		if (effect != "" && Sound != null)
+			Sound.Play();
 
-	public void Interact(Player player)
-	{
-		if (Price > 0)
-			Buy(player);
-		else if (Lines.Length > 0)
-			Say(Lines[_next++ % Lines.Length], player);
-	}
-
-	private void Buy(Player player)
-	{
-		if (player.Money < Price)
-		{
-			Say($"Nincs annyi lóvéd. {Price} Ft a tarifa.", player);
-			return;
-		}
-
-		player.Money -= Price;
-
-		// ponytail: két cucc van, ezért switch. Ha több lesz, exportált hatásértékek.
-		if (Item == "patyi")
-			player.TakePatyi();
-		else
-			player.DrinkFinlandia();
-
-		Say(Lines.Length > 0 ? Lines[_next++ % Lines.Length] : "Tessék.", player);
-	}
-
-	private void Say(string line, Player player)
-	{
-		if (_label == null)
-			return;
-
-		_label.Text = line.Replace("{penz}", player.Money.ToString());
-		_timer.Start(ShowTime);
+		return reply.Replace("{penz}", player.Money.ToString());
 	}
 }
