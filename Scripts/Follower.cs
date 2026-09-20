@@ -35,6 +35,15 @@ public partial class Follower : CharacterBody2D
 		if (Target == null)
 			return;
 
+		// a player kocsiban ül -> Brendon vele utazik, nem gyalogol a kocsi után
+		if (Target is Player utas && utas.InCar)
+		{
+			_trail.Clear();
+			GlobalPosition = Target.GlobalPosition;
+			Velocity = Vector2.Zero;
+			return;
+		}
+
 		// ajtón át teleportált a player -> Brendon utána megy
 		if (GlobalPosition.DistanceTo(Target.GlobalPosition) > 600.0f)
 		{

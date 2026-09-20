@@ -33,7 +33,6 @@ public partial class Player : CharacterBody2D
 	private int _hairAura = 0;
 	private Area2D _interactArea;
 	private CollisionShape2D _bodyCollision;
-	private Npc _npc;
 	private System.Collections.Generic.Dictionary<Sprite2D, Vector2> _parts;
 	private float _stepTime = 0.0f;
 
@@ -61,19 +60,6 @@ public partial class Player : CharacterBody2D
 		_hairTimer = GetNode<Timer>("HairTimer");
 		_hairTimer.Timeout += OnHairGrownBack;
 
-		_interactArea.BodyEntered += body =>
-		{
-			Npc npc = body.GetNodeOrNull<Npc>("Npc");
-			if (npc != null)
-				_npc = npc;
-		};
-
-		_interactArea.BodyExited += body =>
-		{
-			if (body.GetNodeOrNull<Npc>("Npc") == _npc)
-				_npc = null;
-		};
-
 		_effectTimer = new Timer { OneShot = true };
 		AddChild(_effectTimer);
 		_effectTimer.Timeout += () => { _speedMultiplier = 1.0f; _wobble = 0.0f; };
@@ -84,8 +70,39 @@ public partial class Player : CharacterBody2D
 		if (Dialogue.IsOpen || InCar || Dialogue.Current == null)
 			return;
 
-		if (_npc != null && Input.IsActionJustPressed("pickup"))
-			Dialogue.Current.Open(_npc, this);
+		if (!Input.IsActionJustPressed("pickup"))
+			return;
+
+		Npc npc = NearestNpc();
+
+		if (npc != null)
+			Dialogue.Current.Open(npc, this);
+	}
+
+	// Brendon követ minket, ezért folyamatosan az InteractArea-ban van. Nem az nyer,
+	// aki előbb lépett be, hanem akihez éppen a legközelebb állunk.
+	private Npc NearestNpc()
+	{
+		Npc best = null;
+		float bestDistance = float.MaxValue;
+
+		foreach (Node2D body in _interactArea.GetOverlappingBodies())
+		{
+			Npc npc = body.GetNodeOrNull<Npc>("Npc");
+
+			if (npc == null)
+				continue;
+
+			float distance = GlobalPosition.DistanceSquaredTo(body.GlobalPosition);
+
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				best = npc;
+			}
+		}
+
+		return best;
 	}
 
 	// Beültünk/kiszálltunk a kocsiból: a testünk ilyenkor nem mozog és nem ütközik.

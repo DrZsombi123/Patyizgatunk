@@ -1,8 +1,8 @@
 using Godot;
 
 // Minecraft-stílusú csík a képernyő alján: 6 rekesz, a kijelölt sárga kerettel.
-// 1-6 vagy egérgörgő vált, Q használja a kijelöltet (a hatást a Player kapja).
-// ponytail: nincs ikon az Art-ban, ezért a rekeszben a tárgy neve áll.
+// 1-6 vagy egérgörgő vált, kattintás (vagy Q) elhasználja a kijelöltet.
+// A rekeszben az Art/item_<név>.png; ha nincs ilyen kép, a tárgy neve látszik.
 // ponytail: a UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
 public partial class Hotbar : CanvasLayer
 {
@@ -97,12 +97,14 @@ public partial class Hotbar : CanvasLayer
 			return;
 		}
 
-		if (@event is InputEventMouseButton wheel && wheel.Pressed)
+		if (@event is InputEventMouseButton mouse && mouse.Pressed)
 		{
-			if (wheel.ButtonIndex == MouseButton.WheelDown)
+			if (mouse.ButtonIndex == MouseButton.WheelDown)
 				Select((_selected + 1) % Slots);
-			else if (wheel.ButtonIndex == MouseButton.WheelUp)
+			else if (mouse.ButtonIndex == MouseButton.WheelUp)
 				Select((_selected + Slots - 1) % Slots);
+			else if (mouse.ButtonIndex == MouseButton.Left || mouse.ButtonIndex == MouseButton.Right)
+				UseSelected();
 		}
 	}
 

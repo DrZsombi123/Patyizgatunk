@@ -69,7 +69,7 @@ public partial class Car : CharacterBody2D
 		_near = null;
 
 		player.SetInCar(true);
-		_enterSfx.Play();
+		PlayOnly(_enterSfx);
 
 		// Brendon is beszáll: a kocsi mögött jön tovább, csak nem látszik
 		if (Passenger != null)
@@ -82,7 +82,7 @@ public partial class Car : CharacterBody2D
 	{
 		_driver.GlobalPosition = GlobalPosition + Vector2.Right.Rotated(Rotation) * 34.0f;
 		_driver.SetInCar(false);
-		_exitSfx.Play();
+		PlayOnly(_exitSfx);
 
 		if (Passenger != null)
 			Passenger.Visible = true;
@@ -90,6 +90,14 @@ public partial class Car : CharacterBody2D
 		_near = _driver;
 		_driver = null;
 		UpdateHint();
+	}
+
+	// ponytail: egyszerre csak az egyik szóljon, kulonben osszemegy a be- es kiszallas hangja
+	private void PlayOnly(AudioStreamPlayer sfx)
+	{
+		_enterSfx.Stop();
+		_exitSfx.Stop();
+		sfx.Play();
 	}
 
 	private void UpdateHint()

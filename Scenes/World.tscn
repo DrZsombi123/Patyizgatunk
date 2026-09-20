@@ -34,6 +34,8 @@
 [ext_resource type="AudioStream" path="res://Art/autokiszallas.mp3" id="20_kiszallas"]
 [ext_resource type="AudioStream" path="res://Art/merci.mp3" id="23_merci_sfx"]
 [ext_resource type="AudioStream" path="res://Art/jack.mp3" id="21_jack"]
+[ext_resource type="AudioStream" path="res://Art/finlandiakiralya.mp3" id="25_finlandia"]
+[ext_resource type="Script" path="res://Scripts/Ducker.cs" id="26_ducker"]
 [ext_resource type="Script" path="res://Scripts/Dancer.cs" id="20_dancer"]
 [ext_resource type="Script" path="res://Scripts/UltraPatyi.cs" id="24_ultra"]
 [ext_resource type="Script" path="res://Scripts/Hotbar.cs" id="22_hotbar"]
@@ -1411,10 +1413,16 @@ script = ExtResource("13_npc")
 Lines = PackedStringArray("Ez a szám rólad szól, csak még nem tudod.", "Kérés nincs. Basszus van.", "Reggel hatig nyomom. Utána te nyomod.")
 Options = PackedStringArray("Tedd fel a kedvencemet!||0|Kérés nincs. Basszus van.", "Ez mi a szám?||0|A tiéd, csak még nem tudod.")
 
-[node name="Npc" type="Node2D" parent="Szorakozohely/Csapos"]
+[node name="Sfx" type="AudioStreamPlayer" parent="Szorakozohely/Csapos" node_paths=PackedStringArray("Music")]
+stream = ExtResource("25_finlandia")
+script = ExtResource("26_ducker")
+Music = NodePath("../../Music")
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Csapos" node_paths=PackedStringArray("Sound")]
 script = ExtResource("13_npc")
 Lines = PackedStringArray("Finlandia, dupla? Ne nézz így rám.", "Ez már a hányadik, főnök?", "Kifelé menet ne a falnak menj.")
 Options = PackedStringArray("Egy Finlandiát kérek.|finlandia|3500|Tessék. Kifelé menet ne a falnak menj.", "Csak vizet.||0|Víz nincs. Van Finlandia.")
+Sound = NodePath("../Sfx")
 
 [node name="Npc" type="Node2D" parent="Szorakozohely/Tancos1"]
 script = ExtResource("13_npc")
