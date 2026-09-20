@@ -11,7 +11,7 @@ public partial class Follower : CharacterBody2D
 	public Node2D Target { get; set; }
 
 	[Export]
-	public float Distance { get; set; } = 90.0f;   // ennyi marad köztünk
+	public float Distance { get; set; } = 44.0f;   // ennyi marad köztünk
 
 	[Export]
 	public float Speed { get; set; } = 165.0f;

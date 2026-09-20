@@ -11,6 +11,9 @@ public partial class Car : CharacterBody2D
 	[Export]
 	public float TurnSpeed { get; set; } = 2.2f;
 
+	[Export]
+	public Node2D Passenger { get; set; }   // Brendon beül a jobb ülésre
+
 	private Label _hint;
 	private AudioStreamPlayer _exitSfx;
 	private Player _near;
@@ -64,6 +67,11 @@ public partial class Car : CharacterBody2D
 		_near = null;
 
 		player.SetInCar(true);
+
+		// Brendon is beszáll: a kocsi mögött jön tovább, csak nem látszik
+		if (Passenger != null)
+			Passenger.Visible = false;
+
 		UpdateHint();
 	}
 
@@ -72,6 +80,9 @@ public partial class Car : CharacterBody2D
 		_driver.GlobalPosition = GlobalPosition + Vector2.Right.Rotated(Rotation) * 34.0f;
 		_driver.SetInCar(false);
 		_exitSfx.Play();
+
+		if (Passenger != null)
+			Passenger.Visible = true;
 
 		_near = _driver;
 		_driver = null;

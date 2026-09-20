@@ -1504,10 +1504,11 @@ shape = SubResource("RectangleShape2D_kuka")
 position = Vector2(0, -17)
 texture = ExtResource("17_kuka")
 
-[node name="Bmw" type="CharacterBody2D" parent="."]
+[node name="Bmw" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Passenger")]
 position = Vector2(1296, 752)
 motion_mode = 1
 script = ExtResource("16_car")
+Passenger = NodePath("../Brendon")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Bmw"]
 shape = SubResource("RectangleShape2D_car")
