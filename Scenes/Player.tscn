@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://Art/player.png" id="2_kyqiw"]
 [ext_resource type="Texture2D" path="res://Art/hair_bad.png" id="3_hbad"]
 [ext_resource type="Texture2D" path="res://Art/hair_good.png" id="4_hgood"]
+[ext_resource type="Texture2D" path="res://Art/head_player.png" id="5_head"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_plysq"]
 
@@ -24,10 +25,19 @@ shape = SubResource("RectangleShape2D_plysq")
 [node name="Visual" type="Node2D" parent="." unique_id=1719142765]
 
 [node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1302736486]
+position = Vector2(0, -6)
 texture = ExtResource("2_kyqiw")
 
+[node name="Head" type="Sprite2D" parent="Visual"]
+texture_filter = 2
+position = Vector2(0, -15)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_head")
+
 [node name="Hair" type="Sprite2D" parent="Visual"]
-position = Vector2(0, -11)
+texture_filter = 2
+position = Vector2(0, -23)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_hbad")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=142844679]
