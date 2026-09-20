@@ -117,11 +117,11 @@ public partial class DrunkSystem : Node
 
 	public string GetStatusName()
 	{
-		if (Drunkness < NauseaStart) return "Sober";
-		if (Drunkness < DisorientStart) return "Buzzed";
-		if (Drunkness < ChaosStart) return "Tipsy";
-		if (Drunkness < BlindStart) return "Drunk";
-		return "Wasted";
+		if (Drunkness < NauseaStart) return "Józan";
+		if (Drunkness < DisorientStart) return "Becsiccsentve";
+		if (Drunkness < ChaosStart) return "Részeg";
+		if (Drunkness < BlindStart) return "Atomrészeg";
+		return "Fullgatya";
 	}
 
 	// ---------- Internals ----------
