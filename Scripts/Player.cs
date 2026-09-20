@@ -22,6 +22,11 @@ public partial class Player : CharacterBody2D
 
 	[Export]
 	public int Money { get; set; } = 20000;   // ponytail: nincs kereset, kaszinó/meló majd hozza
+	[Signal] public delegate void AuraChangedEventHandler(int total);
+
+public int Aura { get; private set; } = 0;
+
+
 
 	public bool HasCarKey { get; set; } = false;   // Brendontól lehet elkérni
 
@@ -49,6 +54,13 @@ public partial class Player : CharacterBody2D
 	private float _jumpTime = 0.0f;
 
 	private Vector2 _visualStartPosition;
+
+	public void AddAura(int amount)
+	{
+		Aura += amount;
+		EmitSignal(SignalName.AuraChanged, Aura);
+	}
+
 
 	public override void _Ready()
 	{
@@ -150,7 +162,7 @@ public partial class Player : CharacterBody2D
 		_speedMultiplier = 1.7f;
 		_wobble = 0.0f;
 		_effectTimer.Start(45.0f);
-		GD.Print("Aura +25"); // TODO: Statisztika (Gergő) aura
+		AddAura(25);
 	}
 
 	// Kemény pia a pulttól (Finlandia, Jack): a részegség sáv töltődik,
@@ -158,7 +170,7 @@ public partial class Player : CharacterBody2D
 	public void DrinkPia(float drunkAmount)
 	{
 		_drunk.AddDrunk(drunkAmount);
-		GD.Print("Aura +5"); // TODO: Statisztika (Gergő) aura
+		AddAura(5);
 	}
 
 	// Energiaital a boltból: kicsit gyorsabb, de nem zavarja össze.
@@ -175,7 +187,7 @@ public partial class Player : CharacterBody2D
 		if (_hairTimer.IsStopped())
 		{
 			_hairAura = aura;
-			GD.Print($"Aura +{aura}"); // TODO: Statisztika (Gergő) aura
+			AddAura(aura);
 		}
 
 		_hair.Texture = GoodHair;
@@ -185,7 +197,7 @@ public partial class Player : CharacterBody2D
 	private void OnHairGrownBack()
 	{
 		_hair.Texture = BadHair;
-		GD.Print($"Aura -{_hairAura}"); // TODO: Statisztika (Gergő) aura
+		AddAura(-_hairAura);
 	}
 
 	public override void _PhysicsProcess(double delta)

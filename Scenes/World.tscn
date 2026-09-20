@@ -10,9 +10,11 @@
 [ext_resource type="Script" uid="uid://r0tx1voj4qkq" path="res://Scripts/DayNight.cs" id="6_daynight"]
 [ext_resource type="Script" uid="uid://djiybbaur81fk" path="res://Scripts/DrunkHud.cs" id="6_fq1sc"]
 [ext_resource type="Texture2D" uid="uid://cl2er01md5g70" path="res://Art/brendon.png" id="7_arus"]
+[ext_resource type="Script" uid="uid://d3nq5hxqondib" path="res://Scripts/AuraLabel.cs" id="7_fq1sc"]
 [ext_resource type="Script" uid="uid://cajrnkdwn5hi8" path="res://Scripts/MusicRoom.cs" id="7_musicroom"]
 [ext_resource type="AudioStream" uid="uid://5gagqlvuc4sn" path="res://Art/uoai.mp3" id="8_clubmusic"]
 [ext_resource type="Texture2D" uid="uid://bul4203clo275" path="res://Art/head_ferike.png" id="8_hferike"]
+[ext_resource type="FontFile" uid="uid://c0xv3qykieosu" path="res://Art/Aurafont.TTF" id="8_ivbkn"]
 [ext_resource type="Texture2D" uid="uid://cq0in66tmtud" path="res://Art/head_brendon.png" id="9_hbrendon"]
 [ext_resource type="Texture2D" uid="uid://b1i4hik14kd6e" path="res://Art/sikator.png" id="10_sikator"]
 [ext_resource type="Script" uid="uid://sit0ck644lyu" path="res://Scripts/Follower.cs" id="11_follower"]
@@ -806,13 +808,14 @@ rendering_quadrant_size = 8
 
 [node name="Player" parent="." unique_id=840449577 instance=ExtResource("1_player")]
 position = Vector2(880, 752)
+Money = 50000
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1155191151]
 zoom = Vector2(2, 2)
 
 [node name="DrunkSystem" type="Node2D" parent="Player" unique_id=541539895]
 script = ExtResource("3_bbwj2")
-SoberRate = 0.0
+SoberRate = 0.3
 
 [node name="DrunkEffects" type="CanvasLayer" parent="Player" unique_id=1173728018 node_paths=PackedStringArray("Drunk")]
 layer = 10
@@ -852,6 +855,12 @@ theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Player/DrunkHUD/MarginContainer" unique_id=649124080]
 layout_mode = 2
+
+[node name="AuraLabel" type="Label" parent="Player/DrunkHUD/MarginContainer/VBoxContainer" unique_id=899622962 node_paths=PackedStringArray("Player")]
+layout_mode = 2
+script = ExtResource("7_fq1sc")
+Player = NodePath("../../../..")
+ArcadeFont = ExtResource("8_ivbkn")
 
 [node name="StatusLabel" type="Label" parent="Player/DrunkHUD/MarginContainer/VBoxContainer" unique_id=65662372]
 layout_mode = 2
