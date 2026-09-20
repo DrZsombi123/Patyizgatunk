@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://dv2emve6kel2g"]
 
-[ext_resource type="Script" uid="uid://b1h80rxqyes4f" path="res://Scenes/Options.cs" id="1_6f4k2"]
+[ext_resource type="Script" uid="uid://b1h80rxqyes4f" path="res://Scripts/Options.cs" id="1_6f4k2"]
 [ext_resource type="FontFile" uid="uid://cieb216psm3ut" path="res://Art/oldenglishtextmt.ttf" id="1_q4at1"]
-[ext_resource type="Texture2D" uid="uid://pm56c2qkrtb1" path="res://Art/kunumario.jpg" id="2_6f4k2"]
+[ext_resource type="Texture2D" uid="uid://dgbfflksbn4sd" path="res://Art/gettobg.jpg" id="3_6f4k2"]
 [ext_resource type="FontFile" uid="uid://fv8jvra3jfms" path="res://Art/CloisterBlack.ttf" id="3_bdxpv"]
 [ext_resource type="PackedScene" uid="uid://cwbr7xaya56o8" path="res://Scenes/PlayButton.tscn" id="4_cja8r"]
 [ext_resource type="Script" uid="uid://bctaccqe0kg8o" path="res://Scripts/BackButton.cs" id="5_pke3u"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uebgo"]
-texture = ExtResource("2_6f4k2")
+texture = ExtResource("3_6f4k2")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ud8ab"]
 content_margin_left = 10.0
