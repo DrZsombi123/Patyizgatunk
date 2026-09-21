@@ -97,7 +97,8 @@ public partial class Car : CharacterBody2D
 		// A player maradjon a kocsin, így a kamera továbbra is őt követi.
 		_driver.GlobalPosition = GlobalPosition;
 
-		// A felirat maradjon vízszintes.
+		// A felirat mindig a kocsi felett legyen.
+		_hint.GlobalPosition = GlobalPosition + new Vector2(-90, -65);
 		_hint.Rotation = -Rotation;
 	}
 
