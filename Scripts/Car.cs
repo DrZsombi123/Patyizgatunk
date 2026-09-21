@@ -25,6 +25,9 @@ public partial class Car : CharacterBody2D
 	private Player _near;
 	private Player _driver;
 
+	// ÚJ: a sofőr részegség rendszere (csak amíg vezet)
+	private DrunkSystem _drunk;
+
 	public override void _Ready()
 	{
 		_hint = GetNode<Label>("Hint");
@@ -70,6 +73,10 @@ public partial class Car : CharacterBody2D
 
 		if (_driver != null)
 		{
+			// ÚJ: kiütve nem lehet kiszállni, majd a kiütés kirakja a sofőrt
+			if (_drunk != null && _drunk.IsBlackedOut)
+				return;
+
 			GetOut();
 			return;
 		}
@@ -85,6 +92,10 @@ public partial class Car : CharacterBody2D
 
 		float throttle = Input.GetAxis("move_down", "move_up");
 		float steer = Input.GetAxis("move_left", "move_right");
+
+		// ÚJ: részegen összezavarodik a gáz és a kormány (kiütéskor 0, a kocsi megáll)
+		if (_drunk != null)
+			(throttle, steer) = _drunk.ModifyDrive(throttle, steer, delta);
 
 		// Álló helyzetben nem fordul.
 		// Tolatáskor megfordul a kormányzás iránya.
@@ -107,6 +118,11 @@ public partial class Car : CharacterBody2D
 		_driver = player;
 		_near = null;
 
+		// ÚJ: figyeljük, ha a sofőr kiütközik vezetés közben
+		_drunk = player.GetNodeOrNull<DrunkSystem>("DrunkSystem");
+		if (_drunk != null)
+			_drunk.PassedOut += OnDriverPassedOut;
+
 		player.SetInCar(true);
 
 		PlayOnly(_enterSfx);
@@ -121,6 +137,8 @@ public partial class Car : CharacterBody2D
 	private void GetOut()
 	{
 		var driver = _driver;
+
+		ReleaseDrunkSystem();   // ÚJ
 
 		driver.GlobalPosition =
 			GlobalPosition
@@ -139,6 +157,41 @@ public partial class Car : CharacterBody2D
 			Passenger.Visible = true;
 
 		UpdateHint();
+	}
+
+	// ÚJ: a sofőr kiütötte magát vezetés közben. A kép már fekete, a DrunkSystem mindjárt
+	// elteleportálja a játékost, ezért itt engedjük el (különben visszarántanánk a kocsira).
+	// A kocsi ott marad, ahol megállt.
+	private void OnDriverPassedOut()
+	{
+		if (_driver == null)
+			return;
+
+		var driver = _driver;
+
+		ReleaseDrunkSystem();
+
+		driver.SetInCar(false);
+
+		Velocity = Vector2.Zero;
+
+		_near = null;
+		_driver = null;
+
+		_drivingSfx.Stop();
+
+		if (Passenger != null)
+			Passenger.Visible = true;
+
+		UpdateHint();
+	}
+
+	private void ReleaseDrunkSystem()
+	{
+		if (_drunk != null)
+			_drunk.PassedOut -= OnDriverPassedOut;
+
+		_drunk = null;
 	}
 
 	private void OnEnterFinished()
