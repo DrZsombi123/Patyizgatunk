@@ -11,6 +11,7 @@ public partial class DrunkSystem : Node
 	[Signal] public delegate void DrunkennessChangedEventHandler(float value);
 	[Signal] public delegate void BlackoutStartedEventHandler(float fadeTime);
 	[Signal] public delegate void BlackoutEndedEventHandler(float fadeTime);
+	[Signal] public delegate void PassedOutEventHandler();   // a kép teljesen fekete, mindjárt jön a teleport
 
 	public const float MaxDrunkness = 100f;
 
@@ -51,6 +52,12 @@ public partial class DrunkSystem : Node
 	private bool _inverted;
 	private bool _stumbling;
 	private Vector2 _stumbleDir;
+
+	// driving-distortion state (kocsi)
+	private float _driveTimer;
+	private float _driveSteerOffset;
+	private float _driveThrottleScale = 1f;
+	private bool _driveSteerInverted;
 
 	public override void _Ready()
 	{
@@ -115,6 +122,39 @@ public partial class DrunkSystem : Node
 		return _inverted ? -result : result;
 	}
 
+	/// <summary>Kocsihoz: gáz (-1..1) és kormány (-1..1) bemenetet zavar össze.</summary>
+	public (float throttle, float steer) ModifyDrive(float throttle, float steer, double delta)
+	{
+		if (IsBlackedOut) return (0f, 0f);
+		if (Drunkness < DisorientStart) return (throttle, steer);
+
+		float dt = (float)delta;
+		_time += dt;
+
+		// 50-70%: kicsit kanyarog, a kormány magától jobbra-balra ring.
+		if (Drunkness < ChaosStart)
+		{
+			float t = Mathf.InverseLerp(DisorientStart, ChaosStart, Drunkness);
+			float sway = Mathf.Sin(_time * 1.9f) * Mathf.Lerp(0.15f, 0.45f, t);
+			float surge = 1f + Mathf.Sin(_time * 3.1f) * 0.08f;
+			return (throttle * surge, Mathf.Clamp(steer + sway, -1f, 1f));
+		}
+
+		// 70%+: kaotikus. Rángatja a kormányt, néha fordítva működik, a gáz hullámzik.
+		float chaos = Mathf.InverseLerp(ChaosStart, MaxDrunkness, Drunkness); // 0..1
+		_driveTimer -= dt;
+		if (_driveTimer <= 0f)
+		{
+			_driveTimer = _rng.RandfRange(0.2f, 0.6f);
+			_driveSteerOffset = _rng.RandfRange(-1f, 1f) * (0.6f + 0.4f * chaos);
+			_driveSteerInverted = _rng.Randf() < 0.2f + 0.3f * chaos;
+			_driveThrottleScale = _rng.RandfRange(0.4f, 1.0f);
+		}
+
+		float s = _driveSteerInverted ? -steer : steer;
+		return (throttle * _driveThrottleScale, Mathf.Clamp(s + _driveSteerOffset, -1f, 1f));
+	}
+
 	public string GetStatusName()
 	{
 		if (Drunkness < NauseaStart) return "Józan";
@@ -147,6 +187,7 @@ public partial class DrunkSystem : Node
 		await Wait(FadeOutTime);
 
 		// 2) while the screen is black: drop the bar, move the player, leave a present
+		EmitSignal(SignalName.PassedOut);   // ha kocsiban ült, a Car itt engedi el a játékost
 		SetDrunkness(BlackoutResetValue);
 		MoveToRandomWakeSpot();
 		SpawnVomit();
