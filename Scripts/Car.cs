@@ -17,6 +17,13 @@ public partial class Car : CharacterBody2D
 	[Export]
 	public Node2D Passenger { get; set; }   // Brendon beül a jobb ülésre
 
+	// ÚJ: részegen (50% felett) vezetve aura jár a haladásért
+	[Export]
+	public float DrunkDriveAuraSeconds { get; set; } = 5.0f;   // ennyi mp tényleges haladás után...
+
+	[Export]
+	public int DrunkDriveAura { get; set; } = 5;   // ...ennyi aura
+
 	private Label _hint;
 	private AudioStreamPlayer _exitSfx;
 	private AudioStreamPlayer _enterSfx;
@@ -27,6 +34,7 @@ public partial class Car : CharacterBody2D
 
 	// ÚJ: a sofőr részegség rendszere (csak amíg vezet)
 	private DrunkSystem _drunk;
+	private float _drunkDriveTime = 0.0f;   // ÚJ: eddig összegyűjtött haladási idő (mp)
 
 	public override void _Ready()
 	{
@@ -105,6 +113,8 @@ public partial class Car : CharacterBody2D
 		Velocity = Vector2.Up.Rotated(Rotation) * Speed * throttle;
 		MoveAndSlide();
 
+		AwardDrunkDriving((float)delta);   // ÚJ
+
 		// A player maradjon a kocsin, így a kamera továbbra is őt követi.
 		_driver.GlobalPosition = GlobalPosition;
 
@@ -116,6 +126,7 @@ public partial class Car : CharacterBody2D
 	private void GetIn(Player player)
 	{
 		_driver = player;
+		_drunkDriveTime = 0.0f;   // ÚJ: új menet, új számláló
 		_near = null;
 
 		// ÚJ: figyeljük, ha a sofőr kiütközik vezetés közben
@@ -192,6 +203,26 @@ public partial class Car : CharacterBody2D
 			_drunk.PassedOut -= OnDriverPassedOut;
 
 		_drunk = null;
+	}
+
+	// ÚJ: 50% részegség fölött minden DrunkDriveAuraSeconds mp tényleges haladás után
+	// DrunkDriveAura pont jár. Állva (vagy falnak tolatva) nem gyűlik az idő.
+	private void AwardDrunkDriving(float delta)
+	{
+		if (_drunk == null || _drunk.IsBlackedOut || _drunk.Drunkness < _drunk.DisorientStart)
+			return;
+
+		if (GetRealVelocity().Length() < 10.0f)
+			return;
+
+		float interval = Mathf.Max(DrunkDriveAuraSeconds, 0.1f);
+		_drunkDriveTime += delta;
+
+		while (_drunkDriveTime >= interval)
+		{
+			_drunkDriveTime -= interval;
+			_driver.AddAura(DrunkDriveAura);
+		}
 	}
 
 	private void OnEnterFinished()
