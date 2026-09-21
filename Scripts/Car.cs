@@ -5,6 +5,9 @@ using Godot;
 // Brendon marad a helyén, nem kell külön kocsi-kamera.
 public partial class Car : CharacterBody2D
 {
+	private const float DriverVolumeDb = 0.0f;
+	private const float NearbyVolumeDb = -12.0f;
+
 	[Export]
 	public float Speed { get; set; } = 400.0f;
 
@@ -17,6 +20,8 @@ public partial class Car : CharacterBody2D
 	private Label _hint;
 	private AudioStreamPlayer _exitSfx;
 	private AudioStreamPlayer _enterSfx;
+	private AudioStreamPlayer _drivingSfx;
+
 	private Player _near;
 	private Player _driver;
 
@@ -25,12 +30,37 @@ public partial class Car : CharacterBody2D
 		_hint = GetNode<Label>("Hint");
 		_exitSfx = GetNode<AudioStreamPlayer>("ExitSfx");
 		_enterSfx = GetNode<AudioStreamPlayer>("EnterSfx");
+		_drivingSfx = GetNode<AudioStreamPlayer>("DrivingSfx");
+
+		_enterSfx.Finished += OnEnterFinished;
+		_exitSfx.Finished += OnExitFinished;
 
 		var area = GetNode<Area2D>("Area");
-		area.BodyEntered += body => { if (body is Player player) { _near = player; UpdateHint(); } };
-		area.BodyExited += body => { if (body == _near) { _near = null; UpdateHint(); } };
+
+		area.BodyEntered += body =>
+		{
+			if (body is not Player player || _driver != null)
+				return;
+
+			_near = player;
+			UpdateHint();
+			StartNearbyIdleIfAllowed();
+		};
+
+		area.BodyExited += body =>
+		{
+			if (body != _near)
+				return;
+
+			_near = null;
+			UpdateHint();
+
+			if (_driver == null)
+				_drivingSfx.Stop();
+		};
 
 		UpdateHint();
+		_drivingSfx.Stop();
 	}
 
 	public override void _Process(double delta)
@@ -39,8 +69,12 @@ public partial class Car : CharacterBody2D
 			return;
 
 		if (_driver != null)
+		{
 			GetOut();
-		else if (_near != null && _near.HasCarKey)
+			return;
+		}
+
+		if (_near != null && _near.HasCarKey)
 			GetIn(_near);
 	}
 
@@ -52,14 +86,18 @@ public partial class Car : CharacterBody2D
 		float throttle = Input.GetAxis("move_down", "move_up");
 		float steer = Input.GetAxis("move_left", "move_right");
 
-		// állva nem fordul, tolatásnál fordítva húz - mint egy igazi tragacs
+		// Álló helyzetben nem fordul.
+		// Tolatáskor megfordul a kormányzás iránya.
 		if (Mathf.Abs(throttle) > 0.1f)
 			Rotation += steer * throttle * TurnSpeed * (float)delta;
 
 		Velocity = Vector2.Up.Rotated(Rotation) * Speed * throttle;
 		MoveAndSlide();
 
+		// A player maradjon a kocsin, így a kamera továbbra is őt követi.
 		_driver.GlobalPosition = GlobalPosition;
+
+		// A felirat maradjon vízszintes.
 		_hint.Rotation = -Rotation;
 	}
 
@@ -69,6 +107,7 @@ public partial class Car : CharacterBody2D
 		_near = null;
 
 		player.SetInCar(true);
+
 		PlayOnly(_enterSfx);
 
 		// Brendon is beszáll: a kocsi mögött jön tovább, csak nem látszik
@@ -80,23 +119,62 @@ public partial class Car : CharacterBody2D
 
 	private void GetOut()
 	{
-		_driver.GlobalPosition = GlobalPosition + Vector2.Right.Rotated(Rotation) * 34.0f;
-		_driver.SetInCar(false);
+		var driver = _driver;
+
+		driver.GlobalPosition =
+			GlobalPosition
+			+ Vector2.Right.Rotated(Rotation) * 34.0f;
+
+		driver.SetInCar(false);
+
+		Velocity = Vector2.Zero;
+
+		_near = driver;
+		_driver = null;
+
 		PlayOnly(_exitSfx);
 
 		if (Passenger != null)
 			Passenger.Visible = true;
 
-		_near = _driver;
-		_driver = null;
 		UpdateHint();
 	}
 
-	// ponytail: egyszerre csak az egyik szóljon, kulonben osszemegy a be- es kiszallas hangja
+	private void OnEnterFinished()
+	{
+		if (_driver == null)
+			return;
+
+		_drivingSfx.VolumeDb = DriverVolumeDb;
+		_drivingSfx.Play();
+	}
+
+	private void OnExitFinished()
+	{
+		if (_driver == null && _near != null)
+			StartNearbyIdleIfAllowed();
+	}
+
+	private void StartNearbyIdleIfAllowed()
+	{
+		if (_driver != null ||
+		    _near == null ||
+		    _enterSfx.Playing ||
+		    _exitSfx.Playing)
+			return;
+
+		_drivingSfx.VolumeDb = NearbyVolumeDb;
+
+		if (!_drivingSfx.Playing)
+			_drivingSfx.Play();
+	}
+
 	private void PlayOnly(AudioStreamPlayer sfx)
 	{
 		_enterSfx.Stop();
 		_exitSfx.Stop();
+		_drivingSfx.Stop();
+
 		sfx.Play();
 	}
 

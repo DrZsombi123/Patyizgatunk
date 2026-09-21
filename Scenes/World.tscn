@@ -35,6 +35,7 @@
 [ext_resource type="Script" uid="uid://dkn508s0wlg7p" path="res://Scripts/UltraPatyi.cs" id="24_ultra"]
 [ext_resource type="AudioStream" uid="uid://cxsg426neu8ca" path="res://Art/finlandiakiralya.mp3" id="25_finlandia"]
 [ext_resource type="Script" uid="uid://27uow882p2cl" path="res://Scripts/Ducker.cs" id="26_ducker"]
+[ext_resource type="AudioStream" uid="uid://u0kuxx0i7jqn" path="res://Art/gurulgatok.mp3" id="46_0fglf"]
 [ext_resource type="Texture2D" uid="uid://cpnkcwcd3tkn3" path="res://Art/csapos.png" id="npc_csapos"]
 [ext_resource type="Texture2D" uid="uid://boqx6t1gsb1ue" path="res://Art/csoves1.png" id="npc_csoves1"]
 [ext_resource type="Texture2D" uid="uid://clrm2ayv7m55s" path="res://Art/csoves2.png" id="npc_csoves2"]
@@ -1667,6 +1668,10 @@ stream = ExtResource("20_kiszallas")
 
 [node name="EnterSfx" type="AudioStreamPlayer" parent="Merci" unique_id=1624718619]
 stream = ExtResource("23_merci_sfx")
+
+[node name="DrivingSfx" type="AudioStreamPlayer" parent="Merci" unique_id=1661266081]
+stream = ExtResource("46_0fglf")
+parameters/looping = true
 
 [node name="Area" type="Area2D" parent="Merci" unique_id=991329649]
 
