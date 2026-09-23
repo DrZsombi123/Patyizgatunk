@@ -8,6 +8,7 @@
 [ext_resource type="VideoStream" uid="uid://qw3p5e0mwk60" path="res://Art/kimaradas.ogv" id="6_7whhf"]
 [ext_resource type="Script" uid="uid://bi6wcadnep3ig" path="res://Scripts/CreditsButton.cs" id="6_qfyqv"]
 [ext_resource type="AudioStream" uid="uid://d18cqfxl158l0" path="res://Art/kimaradas.ogg" id="7_7whhf"]
+[ext_resource type="Script" path="res://Scripts/TitleScreen.cs" id="8_title"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_broyc"]
 bg_color = Color(0, 0, 0, 0.7647059)
@@ -53,6 +54,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("8_title")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=59108193]
 z_index = 1

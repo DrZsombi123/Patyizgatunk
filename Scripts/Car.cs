@@ -6,16 +6,24 @@ using Godot;
 public partial class Car : CharacterBody2D
 {
 	private const float DriverVolumeDb = 0.0f;
-	private const float NearbyVolumeDb = -12.0f;
+	private const float NearbyVolumeDb = -6.0f;   // közvetlenül a kocsi mellett, innen halkul a távolsággal
+	private const float DuckDb = -18.0f;          // be/kiszállás hangja alatt ennyivel halkabb (mint a Ducker)
+	private const float FadeSpeed = 8.0f;         // mennyire gyorsan úszik át a hangerő
 
 	[Export]
-	public float Speed { get; set; } = 400.0f;
+	public float Speed { get; set; } = 250.0f;   // lassabb, hogy nagyobbnak tűnjön a map
 
 	[Export]
 	public float TurnSpeed { get; set; } = 2.2f;
 
 	[Export]
 	public Node2D Passenger { get; set; }   // Brendon beül a jobb ülésre
+
+	[Export]
+	public Player Listener { get; set; }   // a zene hangereje az ő távolságától függ
+
+	[Export]
+	public float MusicRange { get; set; } = 160.0f;   // ennyi px-ről már hallatszik a zene
 
 	// ÚJ: részegen (50% felett) vezetve aura jár a haladásért
 	[Export]
@@ -28,6 +36,8 @@ public partial class Car : CharacterBody2D
 	private AudioStreamPlayer _exitSfx;
 	private AudioStreamPlayer _enterSfx;
 	private AudioStreamPlayer _drivingSfx;
+
+	private float _musicPosition = 0.0f;   // itt tart a zene, innen folytatjuk
 
 	private Player _near;
 	private Player _driver;
@@ -43,9 +53,6 @@ public partial class Car : CharacterBody2D
 		_enterSfx = GetNode<AudioStreamPlayer>("EnterSfx");
 		_drivingSfx = GetNode<AudioStreamPlayer>("DrivingSfx");
 
-		_enterSfx.Finished += OnEnterFinished;
-		_exitSfx.Finished += OnExitFinished;
-
 		var area = GetNode<Area2D>("Area");
 
 		area.BodyEntered += body =>
@@ -55,7 +62,6 @@ public partial class Car : CharacterBody2D
 
 			_near = player;
 			UpdateHint();
-			StartNearbyIdleIfAllowed();
 		};
 
 		area.BodyExited += body =>
@@ -65,9 +71,6 @@ public partial class Car : CharacterBody2D
 
 			_near = null;
 			UpdateHint();
-
-			if (_driver == null)
-				_drivingSfx.Stop();
 		};
 
 		UpdateHint();
@@ -76,6 +79,12 @@ public partial class Car : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
+		// a kulcsot a kocsi mellett állva is megkaphatjuk (Brendontól) -> a felirat azonnal kövesse
+		if (_driver == null && _near != null)
+			UpdateHint();
+
+		UpdateMusic((float)delta);
+
 		if (Dialogue.IsOpen || !Input.IsActionJustPressed("vehicle"))
 			return;
 
@@ -89,7 +98,7 @@ public partial class Car : CharacterBody2D
 			return;
 		}
 
-		if (_near != null && _near.HasCarKey)
+		if (_near != null && _near.HasCarKey && !_near.IsBlackedOut)
 			GetIn(_near);
 	}
 
@@ -189,7 +198,7 @@ public partial class Car : CharacterBody2D
 		_near = null;
 		_driver = null;
 
-		_drivingSfx.Stop();
+		PauseMusic();
 
 		if (Passenger != null)
 			Passenger.Visible = true;
@@ -225,42 +234,58 @@ public partial class Car : CharacterBody2D
 		}
 	}
 
-	private void OnEnterFinished()
+	// Vezetés közben teljes hangerő. Kívülről MusicRange-en belül szól (csak ha nálunk a kulcs),
+	// és minél közelebb állunk, annál hangosabb. Be/kiszállás hangja alatt nem áll le, csak
+	// lehalkul, mint a klubban a Finlandiánál.
+	private void UpdateMusic(float delta)
 	{
+		float target = DriverVolumeDb;
+
 		if (_driver == null)
-			return;
+		{
+			float distance = Listener == null ? float.MaxValue : GlobalPosition.DistanceTo(Listener.GlobalPosition);
 
-		_drivingSfx.VolumeDb = DriverVolumeDb;
-		_drivingSfx.Play();
-	}
+			if (distance >= MusicRange || !Listener.HasCarKey)
+			{
+				PauseMusic();
+				return;
+			}
 
-	private void OnExitFinished()
-	{
-		if (_driver == null && _near != null)
-			StartNearbyIdleIfAllowed();
-	}
+			target = NearbyVolumeDb + Mathf.LinearToDb(1.0f - distance / MusicRange);
+		}
 
-	private void StartNearbyIdleIfAllowed()
-	{
-		if (_driver != null ||
-		    _near == null ||
-		    _enterSfx.Playing ||
-		    _exitSfx.Playing)
-			return;
+		if (_enterSfx.Playing || _exitSfx.Playing)
+			target += DuckDb;
 
-		_drivingSfx.VolumeDb = NearbyVolumeDb;
+		// -inf dB-vel a Lerp NaN-t adna
+		target = Mathf.Max(target, -60.0f);
 
 		if (!_drivingSfx.Playing)
-			_drivingSfx.Play();
+		{
+			_drivingSfx.VolumeDb = target;
+			_drivingSfx.Play(_musicPosition);
+			return;
+		}
+
+		_drivingSfx.VolumeDb = Mathf.Lerp(_drivingSfx.VolumeDb, target, Mathf.Min(1.0f, delta * FadeSpeed));
 	}
 
 	private void PlayOnly(AudioStreamPlayer sfx)
 	{
 		_enterSfx.Stop();
 		_exitSfx.Stop();
-		_drivingSfx.Stop();
 
 		sfx.Play();
+	}
+
+	// ponytail: Stop + elmentett pozíció, nem StreamPaused - úgy a Playing is egyértelmű marad
+	private void PauseMusic()
+	{
+		if (!_drivingSfx.Playing)
+			return;
+
+		_musicPosition = _drivingSfx.GetPlaybackPosition();
+		_drivingSfx.Stop();
 	}
 
 	private void UpdateHint()

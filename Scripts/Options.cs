@@ -11,14 +11,17 @@ public partial class Options : Control
     {
         if (_masterSlider != null)
         {
-            // Bekötjük a csúszka értékváltozásának eseményét (signal)
-            _masterSlider.ValueChanged += OnMasterVolumeChanged;
+            // a value_changed a scene-ben már be van kötve, itt nem kell még egyszer
 
             // Beállítjuk a csúszka kezdeti pozícióját a jelenlegi Master bus hangerő alapján
             int masterBusIndex = AudioServer.GetBusIndex("Master");
             float currentDb = AudioServer.GetBusVolumeDb(masterBusIndex);
             _masterSlider.Value = Mathf.DbToLinear(currentDb);
         }
+
+        // a pipa mutassa a valós állapotot (alapból be van kapcsolva a V-sync)
+        GetNode<CheckBox>("PanelContainer/VBoxContainer/CheckBox").SetPressedNoSignal(
+            DisplayServer.WindowGetVsyncMode() != DisplayServer.VSyncMode.Disabled);
     }
 
     private void OnMasterVolumeChanged(double value)

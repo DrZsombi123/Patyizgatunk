@@ -2,6 +2,8 @@
 
 public partial class Player : CharacterBody2D
 {
+	private const int VehicleLayer = 3;   // a kocsik ezen a rétegen vannak, ugrás közben átugorjuk őket
+
 	[Export]
 	public float MoveSpeed { get; set; } = 150.0f;
 
@@ -32,6 +34,13 @@ public int Aura { get; private set; } = 0;
 
 	public bool InCar { get; private set; } = false;
 
+	public bool IsBlackedOut => _drunk.IsBlackedOut;
+
+	public UltraPatyi Secret { get; set; }   // ha a rejtett gomb mellett állunk, az E azt nyomja meg
+
+	// kaszinós gépek/asztalok, amelyek területén állunk: E-re a legközelebbi játék nyílik meg
+	public System.Collections.Generic.HashSet<CasinoStation> Stations { get; } = new();
+
 	private Node2D _visual;
 	private Sprite2D _hair;
 	private Timer _hairTimer;
@@ -55,10 +64,26 @@ public int Aura { get; private set; } = 0;
 
 	private Vector2 _visualStartPosition;
 
+	[Export]
+	public int WinAura { get; set; } = 500;   // ennyi aurától nyertünk -> győzelmi oldal
+
+	private bool _won = false;
+
 	public void AddAura(int amount)
 	{
 		Aura += amount;
 		EmitSignal(SignalName.AuraChanged, Aura);
+
+		if (_won || Aura < WinAura)
+			return;
+
+		// deferred: AddAura fizikából/jelből is jöhet, ott nem cserélünk jelenetet
+		_won = true;
+		Callable.From(() =>
+		{
+			GetTree().Paused = false;   // a kaszinóban is nyerhetünk, ott áll a játék
+			GetTree().ChangeSceneToFile("res://Scenes/Victory.tscn");
+		}).CallDeferred();
 	}
 
 
@@ -91,17 +116,44 @@ public int Aura { get; private set; } = 0;
 		if (!Input.IsActionJustPressed("pickup"))
 			return;
 
+		// a rejtett gomb elsőbbséget kap, különben a mellettünk álló Brendonnal is dumálnánk
+		if (Secret != null)
+		{
+			Secret.Trigger();
+			return;
+		}
+
+		CasinoStation station = NearestStation();
+
+		if (station != null && CasinoGame.Current != null)
+		{
+			CasinoGame.Current.Open(station.Game, this);
+			return;
+		}
+
 		Npc npc = NearestNpc();
 
 		if (npc != null)
 			Dialogue.Current.Open(npc, this);
 	}
 
-	// Brendon követ minket, ezért folyamatosan az InteractArea-ban van. Nem az nyer,
-	// aki előbb lépett be, hanem akihez éppen a legközelebb állunk.
+	public CasinoStation NearestStation()
+	{
+		CasinoStation best = null;
+
+		foreach (CasinoStation station in Stations)
+			if (best == null || station.DistanceTo(GlobalPosition) < best.DistanceTo(GlobalPosition))
+				best = station;
+
+		return best;
+	}
+
+	// A legközelebbi NPC-vel beszélünk. Brendon követ minket, így mindig az InteractArea-ban van:
+	// ő csak akkor szólal meg, ha rajta kívül senki sincs a közelben.
 	private Npc NearestNpc()
 	{
 		Npc best = null;
+		Npc follower = null;
 		float bestDistance = float.MaxValue;
 
 		foreach (Node2D body in _interactArea.GetOverlappingBodies())
@@ -110,6 +162,12 @@ public int Aura { get; private set; } = 0;
 
 			if (npc == null)
 				continue;
+
+			if (body is Follower)
+			{
+				follower = npc;
+				continue;
+			}
 
 			float distance = GlobalPosition.DistanceSquaredTo(body.GlobalPosition);
 
@@ -120,7 +178,7 @@ public int Aura { get; private set; } = 0;
 			}
 		}
 
-		return best;
+		return best ?? follower;
 	}
 
 	// Beültünk/kiszálltunk a kocsiból: a testünk ilyenkor nem mozog és nem ütközik.
@@ -134,6 +192,10 @@ public int Aura { get; private set; } = 0;
 	// Kiugrott valaki a kukából: megiramodunk és kapkodunk egy kicsit.
 	public void Scare()
 	{
+		// ne vegye el a hosszabb szerhatást (patyi, energiaital)
+		if (_effectTimer.TimeLeft > 2.5)
+			return;
+
 		_speedMultiplier = 1.45f;
 		_wobble = 0.5f;
 		_effectTimer.Start(2.5f);
@@ -250,6 +312,7 @@ public int Aura { get; private set; } = 0;
 		{
 			_jumping = true;
 			_jumpTime = 0.0f;
+			SetCollisionMaskValue(VehicleLayer, false);
 		}
 
 		if (!_jumping)
@@ -264,6 +327,7 @@ public int Aura { get; private set; } = 0;
 			_jumping = false;
 			_jumpTime = 0.0f;
 			_visual.Position = _visualStartPosition;
+			SetCollisionMaskValue(VehicleLayer, true);
 			return;
 		}
 

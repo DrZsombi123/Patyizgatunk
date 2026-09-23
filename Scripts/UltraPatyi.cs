@@ -20,8 +20,18 @@ public partial class UltraPatyi : Area2D
 
 	public override void _Ready()
 	{
-		BodyEntered += body => { if (body is Player p) _player = p; };
-		BodyExited += body => { if (body == _player) _player = null; };
+		// az E-t a Player kezeli (Trigger), így nem nyílik meg mellé Brendon párbeszéde is
+		BodyEntered += body => { if (body is Player p) { _player = p; p.Secret = this; } };
+		BodyExited += body =>
+		{
+			if (body != _player)
+				return;
+
+			if (_player.Secret == this)
+				_player.Secret = null;
+
+			_player = null;
+		};
 
 		BuildFx();
 	}
@@ -81,12 +91,7 @@ public partial class UltraPatyi : Area2D
 	public override void _Process(double delta)
 	{
 		if (_left <= 0.0f)
-		{
-			if (_player != null && Input.IsActionJustPressed("pickup"))
-				Start();
-
 			return;
-		}
 
 		_left -= (float)delta;
 
@@ -105,8 +110,11 @@ public partial class UltraPatyi : Area2D
 			Stop();
 	}
 
-	private void Start()
+	public void Trigger()
 	{
+		if (_left > 0.0f || _player == null)
+			return;
+
 		_left = Duration;
 
 		Vector2 screen = GetViewport().GetVisibleRect().Size;

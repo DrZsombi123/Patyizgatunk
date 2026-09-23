@@ -31,26 +31,27 @@ public partial class Npc : Node2D
 		return Lines.Length > 0 ? Lines[_next++ % Lines.Length] : "...";
 	}
 
-	public string[] OptionLabels()
+	// A most választható opciók: ami már nem értelmes (kulcs, ha nálunk van), nem jelenik meg.
+	public string[] Available(Player player)
 	{
-		var labels = new string[Options.Length];
-
-		for (int i = 0; i < Options.Length; i++)
-			labels[i] = Options[i].Split('|')[0];
-
-		return labels;
+		return System.Array.FindAll(Options, option => !(player.HasCarKey && Effect(option) == "kulcs"));
 	}
 
-	public string Choose(int index, Player player)
-	{
-		string[] parts = Options[index].Split('|');
+	public static string Label(string option) => option.Split('|')[0];
 
-		string effect = parts.Length > 1 ? parts[1] : "";
+	private static string Effect(string option)
+	{
+		string[] parts = option.Split('|');
+		return parts.Length > 1 ? parts[1] : "";
+	}
+
+	public string Choose(string option, Player player)
+	{
+		string[] parts = option.Split('|');
+
+		string effect = Effect(option);
 		int price = parts.Length > 2 ? parts[2].ToInt() : 0;
 		string reply = parts.Length > 3 ? parts[3] : "Aha.";
-
-		if (effect == "kulcs" && player.HasCarKey)
-			return "Nálad van a kulcs, Márió. Ne veszítsd el.";
 
 		if (player.Money < price)
 			return $"Nincs meg a {price} Ft. Gyere vissza, ha összejött.";

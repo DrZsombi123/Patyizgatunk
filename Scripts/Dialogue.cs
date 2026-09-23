@@ -22,7 +22,7 @@ public partial class Dialogue : CanvasLayer
 	private Tween _typing;
 	private Npc _npc;
 	private Player _player;
-	private int _optionCount = 0;
+	private string[] _options = System.Array.Empty<string>();
 
 	public override void _Ready()
 	{
@@ -47,7 +47,7 @@ public partial class Dialogue : CanvasLayer
 		_root.Visible = true;
 		_name.Text = npc.DisplayName;
 
-		BuildChoices();
+		BuildChoices(0);
 		Say(npc.Greeting());
 	}
 
@@ -74,7 +74,7 @@ public partial class Dialogue : CanvasLayer
 		{
 			int index = (int)key.Keycode - (int)Key.Key1;
 
-			if (index >= 0 && index < _optionCount)
+			if (index >= 0 && index < _options.Length)
 			{
 				Choose(index);
 				GetViewport().SetInputAsHandled();
@@ -84,8 +84,12 @@ public partial class Dialogue : CanvasLayer
 
 	private void Choose(int index)
 	{
-		Say(_npc.Choose(index, _player));
+		Say(_npc.Choose(_options[index], _player));
 		ShowMoney();
+
+		// a választás megváltoztathatja a listát (pl. megvan a kulcs) -> azonnal újraépítjük.
+		// Deferred, mert a lenyomott gomb épp a saját Pressed jelét futtatja.
+		Callable.From(() => { if (IsOpen) BuildChoices(index); }).CallDeferred();
 	}
 
 	private void ShowMoney()
@@ -170,7 +174,7 @@ public partial class Dialogue : CanvasLayer
 		box.AddChild(_choices);
 	}
 
-	private void BuildChoices()
+	private void BuildChoices(int focus)
 	{
 		foreach (Node child in _choices.GetChildren())
 		{
@@ -178,21 +182,20 @@ public partial class Dialogue : CanvasLayer
 			child.QueueFree();
 		}
 
-		string[] labels = _npc.OptionLabels();
-		_optionCount = labels.Length;
+		_options = _npc.Available(_player);
 		ShowMoney();
 
-		for (int i = 0; i < labels.Length; i++)
+		for (int i = 0; i < _options.Length; i++)
 		{
 			int index = i;
-			Button button = NewChoice($"{i + 1}.  {labels[i]}");
+			Button button = NewChoice($"{i + 1}.  {Npc.Label(_options[i])}");
 			button.Pressed += () => Choose(index);
 		}
 
 		Button leave = NewChoice("Hagyjuk.");
 		leave.Pressed += Close;
 
-		_choices.GetChild<Control>(0).GrabFocus();
+		_choices.GetChild<Control>(Mathf.Min(focus, _options.Length)).GrabFocus();
 	}
 
 	private Button NewChoice(string label)
