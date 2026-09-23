@@ -52,10 +52,10 @@ public partial class Phone : CanvasLayer
 	// ajándék: emoji, név, érték rózsában, esély súly, legalább ennyi néző kell hozzá
 	private static readonly (string Emoji, string Name, int Value, int Weight, int MinViewers)[] Gifts =
 	{
-		("🌹", "Rózsa", 1, 70, 0),
-		("💖", "Szív", 5, 16, 0),
-		("🍩", "Fánk", 30, 8, 20),
-		("👑", "Korona", 99, 5, 60),
+		("🌹", "Rózsa", 1, 150, 0),
+		("💖", "Szív", 5, 30, 0),
+		("🍩", "Fánk", 30, 12, 20),
+		("👑", "Korona", 99, 6, 60),
 		("🦁", "Oroszlán", 500, 1, 200),
 	};
 
@@ -103,9 +103,6 @@ public partial class Phone : CanvasLayer
 	private float _liveTime = 0.0f;
 	private float _carAuraTime = 0.0f;
 
-	private float _commentTimer = 1.0f;
-	private float _giftTimer = 3.0f;
-	private float _joinTimer = 1.0f;
 	private float _heartBudget = 0.0f;
 	private float _waveCooldown = 0.0f;
 	private float _askCooldown = 0.0f;
@@ -209,16 +206,17 @@ public partial class Phone : CanvasLayer
 		_askCooldown = Mathf.Max(0, _askCooldown - delta);
 		_askBoost = Mathf.Max(0, _askBoost - delta);
 
-		if (Tick(ref _commentTimer, delta, 0.4f + _viewers / 50.0f, 3.0f))
+		if (Chance(delta, 0.4f + _viewers / 50.0f, 3.0f))
 			Comment(RandomName(), PickChat());
 
-		if (Tick(ref _joinTimer, delta, 0.2f + _viewers / 80.0f, 1.5f))
+		if (Chance(delta, 0.2f + _viewers / 80.0f, 1.5f))
 			SystemLine($"{RandomName()} csatlakozott 👋");
 
-		if (Tick(ref _giftTimer, delta, _viewers / 120.0f * (_askBoost > 0 ? 3.0f : 1.0f), 2.0f))
+		// átlag ~10 rózsa / ajándék -> 100 néző nagyjából 1,2 rózsa/mp (~60 Ft/mp)
+		if (Chance(delta, _viewers / 800.0f * (_askBoost > 0 ? 3.0f : 1.0f), 2.0f))
 			SendGift();
 
-		if (_rng.Randf() < _viewers / 400.0f * delta)
+		if (Chance(delta, _viewers / 400.0f, 1.0f))
 		{
 			_newFollowers++;
 			_followers++;
@@ -237,20 +235,8 @@ public partial class Phone : CanvasLayer
 		}
 	}
 
-	// rate esemény/mp szerinti véletlen időzítő; max: legfeljebb ennyi esemény/mp
-	private bool Tick(ref float timer, float delta, float rate, float max)
-	{
-		if (rate <= 0.001f)
-			return false;
-
-		timer -= delta;
-
-		if (timer > 0)
-			return false;
-
-		timer = _rng.RandfRange(0.5f, 1.5f) / Mathf.Min(rate, max);
-		return true;
-	}
+	// átlagosan "rate" esemény/mp (legfeljebb "max"), képkockánként sorsolva - így azonnal követi a nézőszámot
+	private bool Chance(float delta, float rate, float max) => _rng.Randf() < Mathf.Min(rate, max) * delta;
 
 	private string PickChat()
 	{
@@ -290,7 +276,7 @@ public partial class Phone : CanvasLayer
 		}
 
 		// rózsából kombóban szokás küldeni
-		int count = chosen.Value == 1 ? _rng.RandiRange(1, 15) : _rng.RandiRange(1, 3);
+		int count = chosen.Value == 1 ? _rng.RandiRange(1, 5) : 1;
 		int value = chosen.Value * count;
 
 		_roses += value;
@@ -716,19 +702,44 @@ public partial class Phone : CanvasLayer
 		return circle;
 	}
 
-	// Márió feje kör alakban (a kör kivágja a képet)
+	private static Texture2D _playerAvatar;
+
+	// Márió feje kör alakban. ponytail: a ClipChildren a (szintén vágott) képernyőn belül nem vág,
+	// ezért egyszer kivágjuk magát a képet: négyzet a fejből, körön kívül átlátszó, belül sötét háttér.
 	private static void PlayerAvatar(Control parent, Vector2 position, float size)
 	{
-		Panel circle = Rounded(parent, position, new Vector2(size, size), new Color(0.2f, 0.2f, 0.2f), 999);
-		circle.ClipChildren = CanvasItem.ClipChildrenMode.AndDraw;
-
-		circle.AddChild(new TextureRect
+		if (_playerAvatar == null)
 		{
-			Texture = GD.Load<Texture2D>("res://Art/head_player.png"),
-			Size = new Vector2(size, size * 1.2f),
-			Position = new Vector2(0, -size * 0.05f),
+			Image head = GD.Load<Texture2D>("res://Art/head_player.png").GetImage();
+			if (head.IsCompressed())
+				head.Decompress();
+			head.Convert(Image.Format.Rgba8);
+
+			int side = Mathf.Min(head.GetWidth(), head.GetHeight());
+			Image round = Image.CreateEmpty(side, side, false, Image.Format.Rgba8);
+			int top = (head.GetHeight() - side) / 2;
+			float r = side / 2.0f;
+
+			for (int y = 0; y < side; y++)
+				for (int x = 0; x < side; x++)
+				{
+					if (new Vector2(x + 0.5f - r, y + 0.5f - r).Length() > r)
+						continue;
+
+					Color pixel = head.GetPixel(x, y + top);
+					round.SetPixel(x, y, new Color(0.25f, 0.25f, 0.28f).Lerp(pixel, pixel.A) with { A = 1 });
+				}
+
+			_playerAvatar = ImageTexture.CreateFromImage(round);
+		}
+
+		parent.AddChild(new TextureRect
+		{
+			Texture = _playerAvatar,
+			Position = position,
+			Size = new Vector2(size, size),
 			ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-			StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
+			StretchMode = TextureRect.StretchModeEnum.Scale,
 			MouseFilter = Control.MouseFilterEnum.Ignore,
 		});
 	}
