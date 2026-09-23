@@ -16,7 +16,7 @@ public partial class Phone : CanvasLayer
 	public int RoseValue { get; set; } = 50;   // Ft / rózsa beváltáskor
 
 	[Export]
-	public int ViewersPerAura { get; set; } = 5;   // nézettség plafon: 50 + aura * ennyi
+	public int ViewersPerAura { get; set; } = 5;   // ennyi néző jár auránként (alap: 60 + aura * ennyi)
 
 	[Export]
 	public float CarAuraSeconds { get; set; } = 4.0f;   // kocsiból élőzve ennyi mp-enként +1 aura
@@ -190,10 +190,14 @@ public partial class Phone : CanvasLayer
 	{
 		_liveTime += delta;
 
-		// nézők: az aurával és kocsiban gyorsabban jönnek, plafon az aurától függ, közben ingadozik
-		float growth = (1.0f + Player.Aura / 25.0f) * (Player.InCar ? 2.0f : 1.0f);
-		float cap = 50 + Mathf.Max(Player.Aura, 0) * ViewersPerAura;
-		_viewers = Mathf.Clamp(_viewers + growth * delta + _rng.RandfRange(-1.5f, 1.5f) * delta * Mathf.Sqrt(_viewers + 1), 0, cap);
+		// nézők: egy célszám felé tartanak, ami az aurával, az élő hosszával (max 4x) és kocsiban nő.
+		// Nincs kemény plafon: a szám folyton ingadozik, mint a valódi élőben, nem fagy be.
+		float target = (60 + Mathf.Max(Player.Aura, 0) * ViewersPerAura)
+			* Mathf.Min(1.0f + _liveTime / 90.0f, 4.0f)
+			* (Player.InCar ? 1.5f : 1.0f);
+
+		_viewers += (target - _viewers) * 0.04f * delta;
+		_viewers = Mathf.Max(0, _viewers + _rng.RandfRange(-1.0f, 1.0f) * Mathf.Sqrt(_viewers + 1) * 1.5f * delta);
 		_peakViewers = Mathf.Max(_peakViewers, (int)_viewers);
 
 		// lájkok és a jobb oldalon felszálló szívek
