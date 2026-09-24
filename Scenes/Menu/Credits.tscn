@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://o2bm56m1jlug"]
+
+[ext_resource type="FontFile" uid="uid://cieb216psm3ut" path="res://Art/Fonts/old_english_text_mt.ttf" id="1_7xmno"]
+[ext_resource type="Texture2D" uid="uid://dgbfflksbn4sd" path="res://Art/UI/menu_hatter.jpg" id="2_iynit"]
+[ext_resource type="FontFile" uid="uid://fv8jvra3jfms" path="res://Art/Fonts/cloister_black.ttf" id="3_iynit"]
+[ext_resource type="PackedScene" uid="uid://cwbr7xaya56o8" path="res://Scenes/Menu/MenuButton.tscn" id="4_uy3b0"]
+[ext_resource type="Script" path="res://Scripts/Menu/SceneButton.cs" id="5_iynit"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5hjg3"]
+texture = ExtResource("2_iynit")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ufi4l"]
+bg_color = Color(0, 0, 0, 0.56078434)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9779369, 0.97793704, 0.9779369, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Credits" type="Control" unique_id=1157793102]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=59108193]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -310.0
+offset_right = 225.0
+offset_bottom = -209.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_colors/default_color = Color(1, 1, 0, 1)
+theme_override_fonts/normal_font = ExtResource("1_7xmno")
+theme_override_font_sizes/normal_font_size = 100
+text = "Alkotók"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=166265959]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_5hjg3")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1198260657]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 30
+
+[node name="JanosText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=553056141]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Molnár János "
+fit_content = true
+autowrap_mode = 0
+
+[node name="ZsombiText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=1363978286]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Girán Zsombor "
+fit_content = true
+autowrap_mode = 0
+
+[node name="GergoText" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=1294237097]
+z_index = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_iynit")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxFlat_ufi4l")
+text = " Sándor Gergö"
+fit_content = true
+autowrap_mode = 0
+
+[node name="BackButton" parent="PanelContainer/VBoxContainer" unique_id=1246035958 instance=ExtResource("4_uy3b0")]
+z_index = 1
+layout_mode = 2
+text = "Vissza"
+script = ExtResource("5_iynit")
+Scene = "res://Scenes/Menu/TitleScreen.tscn"
+
