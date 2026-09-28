@@ -93,6 +93,7 @@ public partial class Quests : CanvasLayer
 
 		var quest = List[Index];
 		_title.Text = quest.Title;
+		_progress.Visible = quest.Target > 1;
 		_progress.Text = quest.Target > 1 ? $"{Number(Progress)} / {Number(quest.Target)}" : "";
 	}
 
