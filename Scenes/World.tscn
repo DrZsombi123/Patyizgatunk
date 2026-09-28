@@ -35,11 +35,11 @@
 [ext_resource type="Script" uid="uid://dkn508s0wlg7p" path="res://Scripts/World/UltraPatyi.cs" id="24_ultra"]
 [ext_resource type="AudioStream" uid="uid://cxsg426neu8ca" path="res://Art/Sfx/finlandia_kiralya.mp3" id="25_finlandia"]
 [ext_resource type="Script" uid="uid://27uow882p2cl" path="res://Scripts/World/Ducker.cs" id="26_ducker"]
-[ext_resource type="Script" path="res://Scripts/Phone/Phone.cs" id="27_phone"]
-[ext_resource type="Script" path="res://Scripts/Casino/CasinoGame.cs" id="28_casinogame"]
-[ext_resource type="Script" path="res://Scripts/Casino/CasinoStation.cs" id="29_station"]
-[ext_resource type="Script" path="res://Scripts/Hud/Quests.cs" id="30_quests"]
-[ext_resource type="Script" path="res://Scripts/World/SaveGame.cs" id="31_savegame"]
+[ext_resource type="Script" uid="uid://vbjrap7pvovg" path="res://Scripts/Phone/Phone.cs" id="27_phone"]
+[ext_resource type="Script" uid="uid://1gr4eexch2sd" path="res://Scripts/Casino/CasinoGame.cs" id="28_casinogame"]
+[ext_resource type="Script" uid="uid://dh2qpsftnt7sg" path="res://Scripts/Casino/CasinoStation.cs" id="29_station"]
+[ext_resource type="Script" uid="uid://dpmfpb7t4rw7r" path="res://Scripts/Hud/Quests.cs" id="30_quests"]
+[ext_resource type="Script" uid="uid://e81sum5i5w6u" path="res://Scripts/World/SaveGame.cs" id="31_savegame"]
 [ext_resource type="AudioStream" uid="uid://u0kuxx0i7jqn" path="res://Art/Music/gurulgatok.mp3" id="46_0fglf"]
 [ext_resource type="Texture2D" uid="uid://cpnkcwcd3tkn3" path="res://Art/Characters/csapos.png" id="npc_csapos"]
 [ext_resource type="Texture2D" uid="uid://boqx6t1gsb1ue" path="res://Art/Characters/csoves1.png" id="npc_csoves1"]
@@ -786,11 +786,11 @@ size = Vector2(288, 32)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_roulette"]
 size = Vector2(84, 70)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_table"]
-size = Vector2(56, 60)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_table2"]
 size = Vector2(56, 92)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_table"]
+size = Vector2(56, 60)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_club"]
 size = Vector2(576, 384)
@@ -889,6 +889,15 @@ layout_mode = 2
 [node name="DrunkBar" type="ProgressBar" parent="Player/DrunkHUD/MarginContainer/VBoxContainer" unique_id=824252325]
 custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Player" unique_id=1968046471]
+
+[node name="PhoneBindLabel" type="Label" parent="Player/CanvasLayer" unique_id=226788413]
+offset_left = 1053.0
+offset_top = 343.0
+offset_right = 1142.0
+offset_bottom = 366.0
+text = "F1 - Telefon"
 
 [node name="BarberDoor" type="Area2D" parent="." unique_id=148550251 node_paths=PackedStringArray("Target")]
 position = Vector2(912, 726)
@@ -1274,67 +1283,66 @@ Lines = PackedStringArray("Egy Jack, jéggel? Egészségedre!", "A ház nem fize
 Options = PackedStringArray("Egy Jack Danielst kérek.|jack|3500|Egészségedre. Lassan idd.", "Csak vizet.||0|Vizet a mosdóban találsz.")
 Sound = NodePath("../Sfx")
 
-[node name="Nyerogepek" type="Area2D" parent="Casino"]
+[node name="Nyerogepek" type="Area2D" parent="Casino" unique_id=533602043]
 position = Vector2(3696, 738)
 collision_layer = 0
 script = ExtResource("29_station")
-Game = "slots"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Nyerogepek"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Nyerogepek" unique_id=594969952]
 shape = SubResource("RectangleShape2D_slots")
 
-[node name="Rulett" type="Area2D" parent="Casino"]
+[node name="Rulett" type="Area2D" parent="Casino" unique_id=1803970551]
 position = Vector2(3648, 816)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "roulette"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Rulett"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Rulett" unique_id=968257918]
 shape = SubResource("RectangleShape2D_roulette")
 
-[node name="Huszonegy1" type="Area2D" parent="Casino"]
+[node name="Huszonegy1" type="Area2D" parent="Casino" unique_id=291622734]
 position = Vector2(3600, 896)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "blackjack"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy1" unique_id=1352183850]
 shape = SubResource("RectangleShape2D_table2")
 
-[node name="Kocka1" type="Area2D" parent="Casino"]
+[node name="Kocka1" type="Area2D" parent="Casino" unique_id=1089178078]
 position = Vector2(3696, 796)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "dice"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Kocka1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Kocka1" unique_id=708060805]
 shape = SubResource("RectangleShape2D_table")
 
-[node name="Huszonegy2" type="Area2D" parent="Casino"]
+[node name="Huszonegy2" type="Area2D" parent="Casino" unique_id=671992814]
 position = Vector2(3888, 880)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "blackjack"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy2" unique_id=834644649]
 shape = SubResource("RectangleShape2D_table")
 
-[node name="Kocka2" type="Area2D" parent="Casino"]
+[node name="Kocka2" type="Area2D" parent="Casino" unique_id=1940168599]
 position = Vector2(3952, 912)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "dice"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Kocka2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Kocka2" unique_id=1609074176]
 shape = SubResource("RectangleShape2D_table")
 
-[node name="Huszonegy3" type="Area2D" parent="Casino"]
+[node name="Huszonegy3" type="Area2D" parent="Casino" unique_id=1904134202]
 position = Vector2(3984, 944)
 collision_layer = 0
 script = ExtResource("29_station")
 Game = "blackjack"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Casino/Huszonegy3" unique_id=691418684]
 shape = SubResource("RectangleShape2D_table")
 
 [node name="Lamp1" type="PointLight2D" parent="Casino" unique_id=644644403 groups=["night_lights"]]
@@ -1699,11 +1707,11 @@ script = ExtResource("14_dialogue")
 [node name="Hotbar" type="CanvasLayer" parent="." unique_id=309972586]
 script = ExtResource("22_hotbar")
 
-[node name="Phone" type="CanvasLayer" parent="." node_paths=PackedStringArray("Player")]
+[node name="Phone" type="CanvasLayer" parent="." unique_id=2134683521 node_paths=PackedStringArray("Player")]
 script = ExtResource("27_phone")
 Player = NodePath("../Player")
 
-[node name="CasinoGame" type="CanvasLayer" parent="."]
+[node name="CasinoGame" type="CanvasLayer" parent="." unique_id=1403345321]
 script = ExtResource("28_casinogame")
 
 [node name="Kuka" type="StaticBody2D" parent="." unique_id=474635578]
@@ -1829,8 +1837,8 @@ position = Vector2(2299, 1395)
 [node name="Marker2D13" type="Marker2D" parent="BlackoutSpots" unique_id=1874370104 groups=["wakeup_points"]]
 position = Vector2(1998, 1698)
 
-[node name="Quests" type="CanvasLayer" parent="."]
+[node name="Quests" type="CanvasLayer" parent="." unique_id=368179543]
 script = ExtResource("30_quests")
 
-[node name="SaveGame" type="Node" parent="."]
+[node name="SaveGame" type="Node" parent="." unique_id=504056308]
 script = ExtResource("31_savegame")
