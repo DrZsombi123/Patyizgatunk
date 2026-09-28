@@ -26,7 +26,7 @@ public partial class Phone
 		Shade(screen, ScreenSize.Y - 230, 230, 0.0f, 0.65f);
 
 		_clock = Text(screen, new Vector2(22, 6), 11, Colors.White);
-		Text(screen, new Vector2(ScreenSize.X - 70, 6), 10, Colors.White).Text = "5G  ▮▮▮ 87%";
+		Text(screen, new Vector2(ScreenSize.X - 90, 6), 10, Colors.White).Text = "5G  ▮▮▮ 87%";
 
 		_home = NewLayer(screen);
 		_liveView = NewLayer(screen);
@@ -84,7 +84,7 @@ public partial class Phone
 		// pénztárca
 		Control wallet = Rounded(_home, new Vector2(14, 396), new Vector2(252, 56), new Color(0, 0, 0, 0.45f), 10);
 		Text(wallet, new Vector2(12, 6), 10, Grey).Text = "LIVE ajándékok egyenlege";
-		_walletLabel = Text(wallet, new Vector2(12, 24), 13, Colors.White);
+		_walletLabel = Text(wallet, new Vector2(4, 24), 13, Colors.White);
 		_cashButton = FlatButton(wallet, new Vector2(176, 14), new Vector2(68, 28), "Beváltás", new Color(1, 1, 1, 0.2f), 12);
 		_cashButton.Pressed += CashOut;
 
@@ -95,14 +95,14 @@ public partial class Phone
 	private void BuildLive()
 	{
 		// házigazda pill: avatar, név, lájkok
-		Control host = Rounded(_liveView, new Vector2(8, 24), new Vector2(136, 36), Pill, 18);
-		PlayerAvatar(host, new Vector2(3, 3), 30);
+		Control host = Rounded(_liveView, new Vector2(8, 24), new Vector2(128, 36), Pill, 18);
+		PlayerAvatar(host, new Vector2(5, 5), 26);
 		Text(host, new Vector2(38, 2), 12, Colors.White).Text = "kunu.mario";
 		_likesLabel = Text(host, new Vector2(38, 18), 10, Grey);
 
 		// jobb felül: nézők kis avatarjai + nézőszám + kilépés
 		for (int i = 0; i < 3; i++)
-			Avatar(_liveView, new Vector2(150 + i * 18, 28), 26, AvatarColor(Names[i * 4]), Names[i * 4]);
+			Avatar(_liveView, new Vector2(140 + i * 18, 28), 26, AvatarColor(Names[i * 4]), Names[i * 4]);
 
 		Control viewers = Rounded(_liveView, new Vector2(206, 30), new Vector2(48, 24), Pill, 12);
 		_viewersLabel = Text(viewers, new Vector2(0, 4), 11, Colors.White);
