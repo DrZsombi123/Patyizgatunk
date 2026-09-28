@@ -909,15 +909,21 @@ layout_mode = 2
 [node name="CanvasLayer" type="CanvasLayer" parent="Player" unique_id=1968046471]
 
 [node name="PanelContainer" type="PanelContainer" parent="Player/CanvasLayer" unique_id=1383394823]
-offset_left = 1038.0
-offset_top = 607.0
-offset_right = 1151.0
-offset_bottom = 647.0
+offset_left = 10.0
+offset_top = 553.0
+offset_right = 167.0
+offset_bottom = 638.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_xrivr")
 
-[node name="PhoneBindLabel" type="Label" parent="Player/CanvasLayer/PanelContainer" unique_id=226788413]
+[node name="PhoneBindLabel" type="RichTextLabel" parent="Player/CanvasLayer/PanelContainer" unique_id=2054138378]
 layout_mode = 2
-text = "F1 - Telefon"
+bbcode_enabled = true
+text = "[color=yellow]LMB[/color] - Használat
+[color=yellow]E[/color] - Vásárlás
+[color=yellow]F1[/color] - Telefon"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BarberDoor" type="Area2D" parent="." unique_id=148550251 node_paths=PackedStringArray("Target")]
 position = Vector2(912, 726)
