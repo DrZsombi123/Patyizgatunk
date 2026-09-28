@@ -757,6 +757,22 @@ shader = ExtResource("3_uvb3s")
 shader_parameter/intensity = 0.0
 shader_parameter/blindness = 0.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xrivr"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0.7019608)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.5019608)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(32, 32)
 
@@ -892,11 +908,15 @@ layout_mode = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Player" unique_id=1968046471]
 
-[node name="PhoneBindLabel" type="Label" parent="Player/CanvasLayer" unique_id=226788413]
-offset_left = 1053.0
-offset_top = 343.0
-offset_right = 1142.0
-offset_bottom = 366.0
+[node name="PanelContainer" type="PanelContainer" parent="Player/CanvasLayer" unique_id=1383394823]
+offset_left = 1038.0
+offset_top = 607.0
+offset_right = 1151.0
+offset_bottom = 647.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xrivr")
+
+[node name="PhoneBindLabel" type="Label" parent="Player/CanvasLayer/PanelContainer" unique_id=226788413]
+layout_mode = 2
 text = "F1 - Telefon"
 
 [node name="BarberDoor" type="Area2D" parent="." unique_id=148550251 node_paths=PackedStringArray("Target")]
