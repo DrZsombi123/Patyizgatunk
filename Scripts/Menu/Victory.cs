@@ -90,7 +90,7 @@ public partial class Victory : Control
 		AddChild(back);
 		back.GrabFocus();
 
-		var music = new AudioStreamPlayer { Stream = GD.Load<AudioStream>("res://Art/Music/uoai.mp3") };
+		var music = new AudioStreamPlayer { Stream = GD.Load<AudioStream>("res://Art/Music/kimaradas.ogg") };
 		music.Finished += () => music.Play();
 		AddChild(music);
 		music.Play();
