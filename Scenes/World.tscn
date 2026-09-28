@@ -919,7 +919,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_xrivr")
 layout_mode = 2
 bbcode_enabled = true
 text = "[color=yellow]LMB[/color] - Használat
-[color=yellow]E[/color] - Vásárlás
+[color=yellow]E[/color] - Interakció
 [color=yellow]F1[/color] - Telefon"
 fit_content = true
 horizontal_alignment = 1
