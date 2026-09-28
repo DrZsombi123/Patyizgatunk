@@ -1,6 +1,6 @@
 using Godot;
 
-// Küldetések egymás után: mindig egy aktív, a jobb felső sarokban látszik a haladással.
+// Küldetések egymás után: mindig egy aktív, felül középen látszik a haladással.
 // A játék többi része csak jelent, pl. Quests.Report("pia"). Teljesítéskor aura jár és jön a következő.
 // A Toast rövid felirat a képernyő tetején (küldetés kész, rendőrség...).
 // ponytail: a UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
@@ -116,12 +116,11 @@ public partial class Quests : CanvasLayer
 		var root = new MarginContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
 		root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 		root.AddThemeConstantOverride("margin_top", 12);
-		root.AddThemeConstantOverride("margin_right", 12);
 		AddChild(root);
 
 		var panel = new PanelContainer
 		{
-			SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd,
+			SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter,
 			SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
 			CustomMinimumSize = new Vector2(260, 0),
 			MouseFilter = Control.MouseFilterEnum.Ignore,
@@ -147,12 +146,15 @@ public partial class Quests : CanvasLayer
 
 		Label heading = NewLabel(box, 12, Yellow);
 		heading.Text = "KÜLDETÉS";
+		heading.HorizontalAlignment = HorizontalAlignment.Center;
 
 		_title = NewLabel(box, 16, White);
+		_title.HorizontalAlignment = HorizontalAlignment.Center;
 		_title.AutowrapMode = TextServer.AutowrapMode.Word;
 		_title.CustomMinimumSize = new Vector2(236, 0);
 
 		_progress = NewLabel(box, 13, new Color(1, 1, 1, 0.6f));
+		_progress.HorizontalAlignment = HorizontalAlignment.Center;
 
 		_toast = new Label
 		{
