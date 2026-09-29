@@ -21,7 +21,7 @@ public partial class Npc : Node2D
 	public override void _Ready()
 	{
 		Label label = GetParent().GetNodeOrNull<Label>("Label");
-		_name = label != null ? label.Text : GetParent().Name;
+		_name = label != null ? label.Text.Split('\n')[0] : GetParent().Name;   // a 2. sor a szlogen, az nem kell a címbe
 	}
 
 	public string DisplayName => _name;

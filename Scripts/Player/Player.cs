@@ -5,7 +5,7 @@ public partial class Player : CharacterBody2D
 	private const int VehicleLayer = 3;   // a kocsik ezen a rétegen vannak, ugrás közben átugorjuk őket
 
 	[Export]
-	public float MoveSpeed { get; set; } = 150.0f;
+	public float MoveSpeed { get; set; } = 120.0f;   // lassabb, hogy a kocsi gyorsabbnak tűnjön
 
 	[Export]
 	public float JumpHeight { get; set; } = 20.0f;
@@ -148,6 +148,9 @@ public partial class Player : CharacterBody2D
 
 	public CasinoStation NearestStation()
 	{
+		if (Stations.Count == 0 || NpcRightHere())
+			return null;
+
 		CasinoStation best = null;
 
 		foreach (CasinoStation station in Stations)
@@ -155,6 +158,19 @@ public partial class Player : CharacterBody2D
 				best = station;
 
 		return best;
+	}
+
+	// Közvetlenül egy NPC mellett állunk (pl. Zoli a rulettasztalnál): akkor vele beszélünk,
+	// nem a gép nyílik meg, pedig a gép területén vagyunk.
+	private bool NpcRightHere()
+	{
+		foreach (Node2D body in _interactArea.GetOverlappingBodies())
+		{
+			if (body is not Follower && body.HasNode("Npc") && GlobalPosition.DistanceTo(body.GlobalPosition) < 32.0f)
+				return true;
+		}
+
+		return false;
 	}
 
 	// A legközelebbi NPC-vel beszélünk. Brendon követ minket, így mindig az InteractArea-ban van:
@@ -282,6 +298,7 @@ public partial class Player : CharacterBody2D
 		{
 			Velocity = Vector2.Zero;
 			Step.Apply(_parts, _stepTime, 0.0f);
+			EndJump();   // különben a levegőben ragadnánk
 			return;
 		}
 
@@ -334,10 +351,7 @@ public partial class Player : CharacterBody2D
 
 		if (progress >= 1.0f)
 		{
-			_jumping = false;
-			_jumpTime = 0.0f;
-			_visual.Position = _visualStartPosition;
-			SetCollisionMaskValue(VehicleLayer, true);
+			EndJump();
 			return;
 		}
 
@@ -351,5 +365,16 @@ public partial class Player : CharacterBody2D
 			_visualStartPosition.X,
 			_visualStartPosition.Y - height
 		);
+	}
+
+	private void EndJump()
+	{
+		if (!_jumping)
+			return;
+
+		_jumping = false;
+		_jumpTime = 0.0f;
+		_visual.Position = _visualStartPosition;
+		SetCollisionMaskValue(VehicleLayer, true);
 	}
 }

@@ -69,6 +69,13 @@ public partial class Dialogue : CanvasLayer
 			return;
 		}
 
+		// a Space az ugrás, de a ui_accept része is: ne vegyen meg véletlenül semmit (az Enter marad)
+		if (@event.IsAction("jump"))   // lenyomás és felengedés is
+		{
+			GetViewport().SetInputAsHandled();
+			return;
+		}
+
 		// 1-9: a sokadik válasz
 		if (@event is InputEventKey key && key.Pressed && !key.Echo)
 		{
@@ -232,12 +239,9 @@ public partial class Dialogue : CanvasLayer
 			ContentMarginRight = 12,
 			ContentMarginTop = 4,
 			ContentMarginBottom = 4,
-			CornerRadiusTopLeft = 3,
-			CornerRadiusTopRight = 3,
-			CornerRadiusBottomLeft = 3,
-			CornerRadiusBottomRight = 3,
 		};
 
+		row.SetCornerRadiusAll(3);
 		return row;
 	}
 
@@ -248,15 +252,12 @@ public partial class Dialogue : CanvasLayer
 			BgColor = new Color(0, 0, 0, 0.85f),
 			BorderColor = White,
 			BorderBlend = true,
-			CornerRadiusTopLeft = 5,
-			CornerRadiusTopRight = 5,
-			CornerRadiusBottomLeft = 5,
-			CornerRadiusBottomRight = 5,
 			ShadowSize = 10,
 			ShadowColor = new Color(0, 0, 0, 0.5f),
 		};
 
 		frame.SetBorderWidthAll(3);
+		frame.SetCornerRadiusAll(5);
 		return frame;
 	}
 }

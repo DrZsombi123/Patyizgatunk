@@ -79,7 +79,6 @@ public partial class CasinoGame
 		if (!TakeBet())
 			return;
 
-		_busy = true;
 		_hideHole = true;
 		_dealerHand.Clear();
 		_playerHand.Clear();
@@ -126,7 +125,10 @@ public partial class CasinoGame
 		int me = Score(_playerHand);
 		int dealer = Score(_dealerHand);
 
-		if (dealer > 21 || me > dealer)
+		// az osztó két lapos 21-e (blackjack) veri a több lapos 21-et
+		if (dealer == 21 && _dealerHand.Count == 2)
+			EndHand(0, "Az osztónak blackjack, ő nyert.");
+		else if (dealer > 21 || me > dealer)
 			EndHand(_stake * 2, dealer > 21 ? $"Az osztó besokallt ({dealer})!" : $"{me} a {dealer} ellen, nyertél!");
 		else if (me == dealer)
 			EndHand(_stake, $"{me}–{dealer}, döntetlen. Visszakapod a téted.");
@@ -136,9 +138,8 @@ public partial class CasinoGame
 
 	private void EndHand(int win, string text)
 	{
-		_busy = false;
+		Payout(win, text);   // előbb: ez oldja fel a kört, a ShowHands már ehhez állítja a gombokat
 		ShowHands();
-		Payout(win, text);
 	}
 
 	private void ShowHands()

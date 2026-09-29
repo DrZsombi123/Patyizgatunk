@@ -13,6 +13,7 @@ public partial class Phone
 		// telefon keret és kerekített, vágott képernyő
 		_phone = Rounded(corner, Vector2.Zero, PhoneSize, new Color(0.05f, 0.05f, 0.05f), 36);
 		_phone.Position = Hidden;
+		_phone.MouseFilter = Control.MouseFilterEnum.Stop;   // a telefonra kattintás ne süsse el a hotbar tárgyát
 		((StyleBoxFlat)_phone.GetThemeStylebox("panel")).BorderColor = new Color(0.3f, 0.3f, 0.3f);
 		((StyleBoxFlat)_phone.GetThemeStylebox("panel")).SetBorderWidthAll(2);
 
@@ -138,7 +139,6 @@ public partial class Phone
 		_liveView.AddChild(_comments);
 
 		_hearts = NewLayer(_liveView);
-		_hearts.MouseFilter = Control.MouseFilterEnum.Ignore;
 
 		_waveButton = FlatButton(_liveView, new Vector2(8, 492), new Vector2(92, 32), "", new Color(1, 1, 1, 0.18f), 12);
 		_waveButton.Pressed += Wave;
@@ -248,7 +248,7 @@ public partial class Phone
 		return button;
 	}
 
-	public static Control Avatar(Control parent, Vector2 position, float size, Color color, string name)
+	private static Control Avatar(Control parent, Vector2 position, float size, Color color, string name)
 	{
 		Panel circle = Rounded(parent, position, new Vector2(size, size), color, 999);
 		((StyleBoxFlat)circle.GetThemeStylebox("panel")).BorderColor = Colors.White;

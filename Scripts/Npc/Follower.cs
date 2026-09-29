@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // Lakatos Brendon követi Kunu Máriót: a player nyomvonalán megy, de lemaradva.
 // Így nem akad el az épületekben és nem lóg a nyakunkon.
-// ponytail: a scene-ben collision_layer/mask = 0, vagyis átmegy mindenen. A nyomvonal
+// ponytail: a scene-ben collision_mask = 0 (a 2-es rétegen van, hogy a player E-je lássa), vagyis átmegy mindenen. A nyomvonal
 // eleve járható, és így nem tolja el a playert az ajtókban (casino, bolt, fodrászat).
 public partial class Follower : CharacterBody2D
 {

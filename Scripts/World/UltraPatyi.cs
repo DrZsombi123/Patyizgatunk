@@ -103,8 +103,7 @@ public partial class UltraPatyi : Area2D
 
 		_cim.Modulate = new Color(1, 1, 1, Mathf.Clamp(2.5f - t, 0.0f, 1.0f));
 
-		if (_camera != null)
-			_camera.Zoom = _cameraZoom * (1.0f + 0.05f * Mathf.Sin(t * 11.0f));
+		_camera.Zoom = _cameraZoom * (1.0f + 0.05f * Mathf.Sin(t * 11.0f));
 
 		if (_left <= 0.0f)
 			Stop();
@@ -123,10 +122,8 @@ public partial class UltraPatyi : Area2D
 		_por.EmissionRectExtents = new Vector2(screen.X * 0.5f + 40.0f, 8.0f);
 		_por.Emitting = true;
 
-		_camera = _player.GetNodeOrNull<Camera2D>("Camera2D");
-
-		if (_camera != null)
-			_cameraZoom = _camera.Zoom;
+		_camera = _player.GetNode<Camera2D>("Camera2D");
+		_cameraZoom = _camera.Zoom;
 
 		_player.TakePatyi();
 	}
@@ -139,10 +136,6 @@ public partial class UltraPatyi : Area2D
 		_tint.Color = new Color(1, 1, 1, 0);
 		_cim.Modulate = new Color(1, 1, 1, 0);
 
-		if (_camera != null)
-		{
-			_camera.Zoom = _cameraZoom;
-			_camera = null;
-		}
+		_camera.Zoom = _cameraZoom;
 	}
 }

@@ -31,8 +31,8 @@ public partial class CasinoGame
 		PaintNumber(-1);
 
 		AddActions(
-			("Piros x2", () => _ = Roulette("Piros", n => IsRed(n), 2)),
-			("Fekete x2", () => _ = Roulette("Fekete", n => n != 0 && !IsRed(n), 2)),
+			("Piros x2", () => _ = Roulette("Piros", n => RouletteWheel.IsRed(n), 2)),
+			("Fekete x2", () => _ = Roulette("Fekete", n => n != 0 && !RouletteWheel.IsRed(n), 2)),
 			("Páros x2", () => _ = Roulette("Páros", n => n != 0 && n % 2 == 0, 2)),
 			("Páratlan x2", () => _ = Roulette("Páratlan", n => n % 2 == 1, 2)));
 
@@ -42,11 +42,9 @@ public partial class CasinoGame
 			("Zöld 0 x36", () => _ = Roulette("Zöld 0", n => n == 0, 36)));
 	}
 
-	private static bool IsRed(int number) => RouletteWheel.IsRed(number);
-
 	private void PaintNumber(int number)
 	{
-		Color color = number < 0 ? new Color(0.15f, 0.15f, 0.15f) : number == 0 ? new Color(0, 0.55f, 0.2f) : IsRed(number) ? new Color(0.75f, 0.05f, 0.1f) : Colors.Black;
+		Color color = number < 0 ? new Color(0.15f, 0.15f, 0.15f) : number == 0 ? new Color(0, 0.55f, 0.2f) : RouletteWheel.IsRed(number) ? new Color(0.75f, 0.05f, 0.1f) : Colors.Black;
 		_numberBox.AddThemeStyleboxOverride("panel", Box(color, Gold, 10));
 		_number.Text = number < 0 ? "?" : number.ToString();
 	}
@@ -56,7 +54,6 @@ public partial class CasinoGame
 		if (!TakeBet())
 			return;
 
-		_busy = true;
 		SetResult($"{name}... Nincs több tét!", White);
 		PaintNumber(-1);
 
@@ -64,7 +61,6 @@ public partial class CasinoGame
 		await _wheel.Spin(result);
 		PaintNumber(result);
 
-		_busy = false;
 		Payout(wins(result) ? _stake * multiplier : 0, $"{result}: " + (wins(result) ? "nyertél!" : "vesztettél."));
 	}
 }

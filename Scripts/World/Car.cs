@@ -59,7 +59,14 @@ public partial class Car : CharacterBody2D
 	private static readonly Color Red = new Color(1, 0.3f, 0.3f);
 	private static readonly Color Yellow = new Color(1, 1, 0);
 
-	public Vector2 ExitPosition => GlobalPosition + Vector2.Right.Rotated(Rotation) * 34.0f;
+	private static readonly Vector2 HintOffset = new Vector2(-90, -65);
+
+	// a player 20x20-as teste, ezzel nézzük, hova fér ki a kocsiból
+	private static readonly RectangleShape2D PlayerBox = new() { Size = new Vector2(20, 20) };
+
+	// Hova szállunk ki: az első szabad hely jobbra, balra, hátul, elöl. Ha mind fal/kocsi,
+	// a beszállás helye (az biztosan szabad volt) - mentéshez és elkapáskor ez kell.
+	public Vector2 ExitPosition => FindExit() ?? _enterPosition;
 
 	private readonly RandomNumberGenerator _rng = new();
 	private float _policeTime = 0.0f;
@@ -75,6 +82,7 @@ public partial class Car : CharacterBody2D
 	private AudioStreamPlayer _drivingSfx;
 
 	private float _musicPosition = 0.0f;   // itt tart a zene, innen folytatjuk
+	private Vector2 _enterPosition;        // innen szálltunk be
 
 	private Player _near;
 	private Player _driver;
@@ -110,6 +118,7 @@ public partial class Car : CharacterBody2D
 			UpdateHint();
 		};
 
+		_enterPosition = GlobalPosition + Vector2.Right.Rotated(Rotation) * 34.0f;
 		UpdateHint();
 		_drivingSfx.Stop();
 
@@ -137,6 +146,12 @@ public partial class Car : CharacterBody2D
 			// kiütve nem lehet kiszállni, majd a kiütés kirakja a sofőrt
 			if (_drunk != null && _drunk.IsBlackedOut)
 				return;
+
+			if (FindExit() == null)
+			{
+				Quests.Toast("Itt nem tudsz kiszállni, állj arrébb!", Yellow);
+				return;
+			}
 
 			GetOut();
 			return;
@@ -178,14 +193,46 @@ public partial class Car : CharacterBody2D
 		_driver.GlobalPosition = GlobalPosition;
 
 		// A felirat mindig a kocsi felett legyen.
-		_hint.GlobalPosition = GlobalPosition + new Vector2(-90, -65);
+		_hint.GlobalPosition = GlobalPosition + HintOffset;
 		_hint.Rotation = -Rotation;
+	}
+
+	// Kiszállás: jobbra, balra, hátul, elöl az első hely, ahova a kocsiból fal nélkül odaérünk
+	// és el is férünk. null: mindenhol fal vagy kocsi.
+	private Vector2? FindExit()
+	{
+		PhysicsDirectSpaceState2D space = GetWorld2D().DirectSpaceState;
+		var exclude = new Godot.Collections.Array<Rid> { GetRid() };
+		var box = new PhysicsShapeQueryParameters2D { Shape = PlayerBox, CollisionMask = 5, Exclude = exclude };   // 5 = a player maszkja
+
+		foreach (Vector2 offset in new[] { Vector2.Right * 34.0f, Vector2.Left * 34.0f, Vector2.Down * 44.0f, Vector2.Up * 44.0f })
+		{
+			Vector2 spot = GlobalPosition + offset.Rotated(Rotation);
+
+			// a sugár miatt vékony falon (pálya széle) sem jutunk át
+			var ray = PhysicsRayQueryParameters2D.Create(GlobalPosition, spot, 5, exclude);
+			box.Transform = new Transform2D(0.0f, spot);
+
+			if (space.IntersectRay(ray).Count == 0 && space.IntersectShape(box, 1).Count == 0)
+				return spot;
+		}
+
+		return null;
+	}
+
+	// kilépés üldözés közben = elkaptak. A SaveGame a World alján van, így utánunk ment.
+	public override void _Notification(int what)
+	{
+		if (what == NotificationWMCloseRequest && _chase > 0.0f)
+			Busted();
 	}
 
 	private void GetIn(Player player)
 	{
 		_driver = player;
 		_drunkDriveTime = 0.0f;   // új menet, új számláló
+		_policeTime = 0.0f;
+		_enterPosition = player.GlobalPosition;
 		_near = null;
 
 		// figyeljük, ha a sofőr kiütközik vezetés közben
@@ -308,6 +355,10 @@ public partial class Car : CharacterBody2D
 	{
 		if (_chase > 0.0f)
 		{
+			// kiütéskor a PassedOut intézi az elkapást, addig nem kapnak el "megállásért"
+			if (_drunk != null && _drunk.IsBlackedOut)
+				return;
+
 			_chase -= delta;
 			_stopped = GetRealVelocity().Length() < 40.0f ? _stopped + delta : 0.0f;
 			_hint.Text = $"🚨 Menekülj! {Mathf.CeilToInt(_chase)}";
@@ -320,11 +371,18 @@ public partial class Car : CharacterBody2D
 			return;
 		}
 
-		if (_drunk == null || _drunk.IsBlackedOut || _drunk.Drunkness < _drunk.DisorientStart)
+		// a "Rázd le a rendőröket" küldetésnél józanon is jönnek, különben sosem teljesülne
+		bool quest = Quests.IsActive("menekules");
+
+		if (_drunk == null || _drunk.IsBlackedOut || (!quest && _drunk.Drunkness < _drunk.DisorientStart))
 		{
 			_policeTime = 0.0f;
 			return;
 		}
+
+		// parkoló kocsit nem üldöznek
+		if (GetRealVelocity().Length() < 10.0f)
+			return;
 
 		_policeTime += delta;
 
@@ -335,7 +393,7 @@ public partial class Car : CharacterBody2D
 
 		float drunkness = Mathf.InverseLerp(_drunk.DisorientStart, DrunkSystem.MaxDrunkness, _drunk.Drunkness);
 
-		if (_rng.Randf() < PoliceChance * (0.5f + 0.5f * drunkness))
+		if (quest || _rng.Randf() < PoliceChance * (0.5f + 0.5f * drunkness))
 			StartChase();
 	}
 
@@ -441,6 +499,7 @@ public partial class Car : CharacterBody2D
 	private void UpdateHint()
 	{
 		_hint.Visible = _near != null || _driver != null;
+		_hint.GlobalPosition = GlobalPosition + HintOffset;   // betöltés után elforgatott kocsinál is felül
 		_hint.Rotation = -Rotation;   // a felirat maradjon vízszintes
 
 		if (_driver != null)

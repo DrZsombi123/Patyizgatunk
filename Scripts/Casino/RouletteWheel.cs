@@ -29,8 +29,9 @@ public partial class RouletteWheel : Control
 
 	private float _wheelFrom, _wheelTurns, _ballFrom, _ballTurns, _radiusFrom;
 
-	public static bool IsRed(int number) =>
-		System.Array.IndexOf(new[] { 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 }, number) >= 0;
+	private static readonly int[] Reds = { 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 };
+
+	public static bool IsRed(int number) => System.Array.IndexOf(Reds, number) >= 0;
 
 	public async Task Spin(int result, float seconds = 5.0f)
 	{

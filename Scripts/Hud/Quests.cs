@@ -21,7 +21,7 @@ public partial class Quests : CanvasLayer
 		("Szerezz rózsát TikTok élőben", "rozsa", 300, 20),
 		("Igyál kemény piát", "pia", 3, 10),
 		("Nyerj pénzt a kaszinóban (Ft)", "kaszino", 20000, 25),
-		("Rázd le a rendőröket", "menekules", 1, 30),
+		("Vezess, és rázd le a rendőröket", "menekules", 1, 30),
 	};
 
 	public int Index { get; private set; }
@@ -53,6 +53,9 @@ public partial class Quests : CanvasLayer
 	public static void Report(string eventName, int amount = 1) => Current?.Advance(eventName, amount);
 
 	public static void Toast(string text, Color color) => Current?.ShowToast(text, color);
+
+	public static bool IsActive(string eventName) =>
+		Current != null && Current.Index < List.Length && List[Current.Index].Event == eventName;
 
 	// mentésből
 	public void Restore(int index, int progress)

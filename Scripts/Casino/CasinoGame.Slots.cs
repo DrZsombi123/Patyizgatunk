@@ -45,7 +45,6 @@ public partial class CasinoGame
 		if (!TakeBet())
 			return;
 
-		_busy = true;
 		SetResult("Pörög...", White);
 
 		int[] final = new int[3];
@@ -53,15 +52,13 @@ public partial class CasinoGame
 			final[i] = _rng.RandiRange(0, SlotIcons.Length - 1);
 
 		// a hengerek egymás után állnak meg
-		for (int step = 0; step < 26; step++)
+		for (int step = 0; step <= 10 + 2 * 8; step++)   // az utolsó lépésben áll meg a 3. henger is
 		{
 			for (int i = 0; i < 3; i++)
 				_reels[i].Texture = SlotIcon(step < 10 + i * 8 ? _rng.RandiRange(0, SlotIcons.Length - 1) : final[i]);
 
 			await Wait(0.06);
 		}
-
-		_busy = false;
 
 		if (final[0] == final[1] && final[1] == final[2])
 			Payout(_stake * (SlotIcons[final[0]] == "patyi" ? 20 : 8), "JACKPOT!");

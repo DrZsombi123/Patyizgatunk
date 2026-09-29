@@ -15,6 +15,7 @@ public partial class Victory : Control
 		new[] { "dj", "", "" },
 		new[] { "tancos2", "", "" },
 		new[] { "player", "head_player", "hair_good" },
+		new[] { "radics", "head_radics", "" },
 		new[] { "tancos3", "", "" },
 		new[] { "ferike", "head_ferike", "" },
 		new[] { "csapos", "", "" },

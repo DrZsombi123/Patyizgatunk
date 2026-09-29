@@ -33,6 +33,7 @@ public partial class CasinoGame : CanvasLayer
 	private PanelContainer _table;
 	private VBoxContainer _body;
 	private readonly List<Button> _betButtons = new();
+	private readonly List<Button> _actions = new();   // az épp nyitott játék gombjai
 
 	private Player _player;
 	private string _game;
@@ -72,7 +73,6 @@ public partial class CasinoGame : CanvasLayer
 	{
 		_game = game;
 		_player = player;
-		_busy = false;
 
 		_title.Text = Title(game).ToUpper();
 		_root.Visible = true;
@@ -83,6 +83,9 @@ public partial class CasinoGame : CanvasLayer
 			_body.RemoveChild(child);
 			child.QueueFree();
 		}
+
+		_actions.Clear();
+		SetBusy(false);
 
 		switch (game)
 		{
@@ -103,6 +106,16 @@ public partial class CasinoGame : CanvasLayer
 
 		_root.Visible = false;
 		GetTree().Paused = false;
+	}
+
+	// kilépés félbehagyott kör közben: visszajár a tét (a SaveGame utánunk ment)
+	public override void _Notification(int what)
+	{
+		if (what != NotificationWMCloseRequest || !_busy)
+			return;
+
+		_busy = false;
+		_player.Money += _stake;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -130,12 +143,27 @@ public partial class CasinoGame : CanvasLayer
 		_stake = Bet;
 		_player.Money -= _stake;
 		ShowMoney();
+		SetBusy(true);   // a Payout oldja fel
 		return true;
+	}
+
+	// kör közben a gombok is kiszürkülnek (a huszonegy utána a sajátjait maga állítja)
+	private void SetBusy(bool busy)
+	{
+		_busy = busy;
+
+		foreach (Button button in _actions)
+			button.Disabled = busy;
+
+		foreach (Button button in _betButtons)
+			button.Disabled = busy;
 	}
 
 	// win: a visszakapott teljes összeg (tét + nyeremény), 0 = vesztettünk
 	private void Payout(int win, string text)
 	{
+		SetBusy(false);
+
 		if (win <= 0)
 		{
 			SetResult(text, Red);
@@ -144,16 +172,26 @@ public partial class CasinoGame : CanvasLayer
 
 		_player.Money += win;
 		ShowMoney();
-		Quests.Report("kaszino", win - _stake);   // csak a tiszta nyereség számít
+
+		// kiírva is csak a tiszta nyereség; döntetlennél a szöveg mondja, hogy megvan a tét
+		int profit = win - _stake;
+
+		if (profit <= 0)
+		{
+			SetResult(text, White);
+			return;
+		}
+
+		Quests.Report("kaszino", profit);
 
 		if (win >= _stake * 5)
 		{
 			_player.AddAura(10);
-			SetResult($"{text}  +{Ft(win)}  +10 AURA", Yellow);
+			SetResult($"{text}  +{Ft(profit)}  +10 AURA", Yellow);
 			return;
 		}
 
-		SetResult($"{text}  +{Ft(win)}", Green);
+		SetResult($"{text}  +{Ft(profit)}", Green);
 	}
 
 	private void ChangeBet(int step)
@@ -201,6 +239,7 @@ public partial class CasinoGame : CanvasLayer
 			buttons.Add(button);
 		}
 
+		_actions.AddRange(buttons);
 		return buttons;
 	}
 

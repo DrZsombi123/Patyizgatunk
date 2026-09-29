@@ -51,10 +51,16 @@ public partial class DayNight : CanvasModulate
 			}
 		}
 
+		// a világító másolat csak dísz, ne ütközzön (a tile-ok ütközését is lemásolná)
+		Emissive.CollisionEnabled = false;
+
 		foreach (Node node in GetTree().GetNodesInGroup("night_lights"))
 		{
 			if (node is PointLight2D light)
+			{
+				light.SetMeta("energy", light.Energy);   // a scene-ben beállított erősség (pl. LampRed 0.5)
 				_lights.Add(light);
+			}
 		}
 
 		_isNight = StartAtNight;
@@ -102,7 +108,7 @@ public partial class DayNight : CanvasModulate
 
 		foreach (PointLight2D light in _lights)
 		{
-			light.Energy = amount;
+			light.Energy = amount * (float)light.GetMeta("energy", 1.0f);
 			light.Visible = amount > 0;
 		}
 	}

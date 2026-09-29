@@ -24,13 +24,6 @@ public partial class AuraLabel : Label
 
 	public override void _Ready()
 	{
-		if (Player == null)
-		{
-			GD.PushError("AuraLabel: állítsd be a 'Player' mezőt az Inspectorban.");
-			SetProcess(false);
-			return;
-		}
-
 		_settings = new LabelSettings
 		{
 			Font = ArcadeFont,
@@ -43,10 +36,13 @@ public partial class AuraLabel : Label
 		};
 		LabelSettings = _settings;
 
-		_target = Player.Aura;
-		_shown = _target;
-
-		Player.AuraChanged += OnAuraChanged;
+		// deferred: a SaveGame csak a mi _Ready-nk után tölti be az aurát, azt ne pörgessük fel 0-ról
+		Callable.From(() =>
+		{
+			_target = Player.Aura;
+			_shown = _target;
+			Player.AuraChanged += OnAuraChanged;
+		}).CallDeferred();
 	}
 
 	private void OnAuraChanged(int total)
@@ -69,7 +65,7 @@ public partial class AuraLabel : Label
 		if (now != _lastShown)
 		{
 			_lastShown = now;
-			Text = $"AURA {now:D5}";
+			Text = now < 0 ? $"AURA -{-now:D4}" : $"AURA {now:D5}";   // negatívban is 5 karakter
 		}
 	}
 

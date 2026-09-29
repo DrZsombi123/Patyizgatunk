@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using Godot;
 
-/// <summary>
-/// Holds the drunkenness value (0-100), sobers the player up over time,
-/// distorts movement input, and runs the blackout sequence at 100%.
-/// Attach to a plain Node called "DrunkSystem" that is a CHILD of the Player.
-/// </summary>
+// Részegség (0-100): idővel józanodik, összezavarja a mozgást és a vezetést,
+// 100%-nál kiütés. A Player "DrunkSystem" nevű gyereke.
 public partial class DrunkSystem : Node
 {
 	[Signal] public delegate void DrunkennessChangedEventHandler(float value);
@@ -29,7 +26,6 @@ public partial class DrunkSystem : Node
 	[Export] public float FadeOutTime = 1.0f;    // fade to black
 	[Export] public float BlackHoldTime = 2.5f;  // fully black
 	[Export] public float FadeInTime = 1.5f;     // wake up
-	[Export] public string WakeUpGroup = "wakeup_points";
 
 	[ExportGroup("Vomit")]
 	[Export] public Texture2D VomitTexture { get; set; }
@@ -41,7 +37,7 @@ public partial class DrunkSystem : Node
 	public float Drunkness { get; private set; }
 	public bool IsBlackedOut { get; private set; }
 
-	private Node2D _player = null!;
+	private Node2D _player;
 	private readonly RandomNumberGenerator _rng = new();
 	private readonly List<Sprite2D> _puddles = new();
 
@@ -72,7 +68,6 @@ public partial class DrunkSystem : Node
 
 	// ---------- Public API (call from Player.cs) ----------
 
-	/// <summary>Call this from your drinking methods, e.g. AddDrunk(8f).</summary>
 	public void AddDrunk(float amount)
 	{
 		if (IsBlackedOut) return;
@@ -83,7 +78,6 @@ public partial class DrunkSystem : Node
 			StartBlackout();
 	}
 
-	/// <summary>Takes raw input and returns the (possibly messed up) direction.</summary>
 	public Vector2 ModifyInput(Vector2 input, double delta)
 	{
 		if (IsBlackedOut) return Vector2.Zero;
@@ -122,7 +116,7 @@ public partial class DrunkSystem : Node
 		return _inverted ? -result : result;
 	}
 
-	/// <summary>Kocsihoz: gáz (-1..1) és kormány (-1..1) bemenetet zavar össze.</summary>
+	// kocsihoz: a gáz (-1..1) és a kormány (-1..1) bemenetet zavarja össze
 	public (float throttle, float steer) ModifyDrive(float throttle, float steer, double delta)
 	{
 		if (IsBlackedOut) return (0f, 0f);
@@ -202,18 +196,8 @@ public partial class DrunkSystem : Node
 
 	private void MoveToRandomWakeSpot()
 	{
-		var spots = GetTree().GetNodesInGroup(WakeUpGroup);
-		if (spots.Count == 0)
-		{
-			GD.PushWarning($"DrunkSystem: no nodes in group '{WakeUpGroup}'. Player stays where they are.");
-			return;
-		}
-
-		var spot = (Node2D)spots[_rng.RandiRange(0, spots.Count - 1)];
-		_player.GlobalPosition = spot.GlobalPosition;
-
-		if (_player is CharacterBody2D body)
-			body.Velocity = Vector2.Zero;
+		var spots = GetTree().GetNodesInGroup("wakeup_points");
+		_player.GlobalPosition = ((Node2D)spots[_rng.RandiRange(0, spots.Count - 1)]).GlobalPosition;
 	}
 
 	// Tócsa a földön, pont ahol felkelünk. Csak látvány, nincs ütközés, nem hat semmire.
@@ -222,9 +206,7 @@ public partial class DrunkSystem : Node
 		if (VomitTexture == null) return;
 
 		Node parent = _player.GetParent();
-		if (parent == null) return;
-
-		float s = Mathf.Max(VomitScale, 0.01f);
+		float s = VomitScale;
 
 		// Y-sortnál az számít, ki van "lejjebb". Hogy a tócsa MINDIG a földön legyen és
 		// mindenki rálépjen, a node-ot a tócsa teteje fölé tesszük (ez a rendezési pont),
@@ -251,11 +233,8 @@ public partial class DrunkSystem : Node
 
 		if (MaxPuddles > 0 && _puddles.Count > MaxPuddles)
 		{
-			Sprite2D oldest = _puddles[0];
+			_puddles[0].QueueFree();
 			_puddles.RemoveAt(0);
-
-			if (IsInstanceValid(oldest))
-				oldest.QueueFree();
 		}
 	}
 }

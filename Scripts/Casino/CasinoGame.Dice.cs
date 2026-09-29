@@ -41,7 +41,6 @@ public partial class CasinoGame
 		if (!TakeBet())
 			return;
 
-		_busy = true;
 		SetResult($"{name}... Gurul!", White);
 
 		int[] final = new int[3];
@@ -60,7 +59,6 @@ public partial class CasinoGame
 		int sum = final[0] + final[1] + final[2];
 		bool triple = final[0] == final[1] && final[1] == final[2];
 
-		_busy = false;
 		Payout(wins(sum, triple) ? _stake * multiplier : 0, $"Összesen {sum}{(triple ? " (hármas)" : "")}: " + (wins(sum, triple) ? "nyertél!" : "vesztettél."));
 	}
 }

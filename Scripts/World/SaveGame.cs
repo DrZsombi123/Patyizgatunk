@@ -29,11 +29,18 @@ public partial class SaveGame : Node
 
 		var timer = new Timer { WaitTime = 30.0, Autostart = true };
 		AddChild(timer);
-		timer.Timeout += Save;
+		timer.Timeout += () =>
+		{
+			// kiütés közben épp teleportálunk, majd a következő kör elmenti
+			if (!_player.IsBlackedOut)
+				Save();
+		};
 
 		Load();
 	}
 
+	// Kilépéskor mindig mentünk (kiütve is: oda, ahol épp vagyunk). A többi node (kaszinó tét,
+	// rendőrök) előbb kapja meg ezt, mert a SaveGame a World legalján van.
 	public override void _Notification(int what)
 	{
 		if (what == NotificationWMCloseRequest)
@@ -42,9 +49,6 @@ public partial class SaveGame : Node
 
 	private void Save()
 	{
-		// kiütés közben épp teleportálunk, majd a következő kör elmenti
-		if (_player.IsBlackedOut)
-			return;
 
 		var cfg = new ConfigFile();
 

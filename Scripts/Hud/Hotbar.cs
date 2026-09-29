@@ -43,29 +43,22 @@ public partial class Hotbar : CanvasLayer
 	// Tele a csík: false, hogy a hívó tudja, nem fért bele.
 	public bool Add(string item)
 	{
-		for (int i = 0; i < Slots; i++)
+		int i = System.Array.IndexOf(_items, item);
+
+		if (i < 0)
 		{
-			if (_items[i] == item)
-			{
-				_counts[i]++;
-				Refresh();
-				return true;
-			}
+			i = System.Array.IndexOf(_items, null);
+
+			if (i < 0)
+				return false;
+
+			_items[i] = item;   // üres rekesz darabszáma 0
+			_selected = i;
 		}
 
-		for (int i = 0; i < Slots; i++)
-		{
-			if (_items[i] == null)
-			{
-				_items[i] = item;
-				_counts[i] = 1;
-				_selected = i;
-				Refresh();
-				return true;
-			}
-		}
-
-		return false;
+		_counts[i]++;
+		Refresh();
+		return true;
 	}
 
 	// mentéshez (üres rekesz: null)
@@ -252,14 +245,11 @@ public partial class Hotbar : CanvasLayer
 		{
 			BgColor = new Color(0, 0, 0, 0.7f),
 			BorderColor = selected ? Yellow : new Color(1, 1, 1, 0.5f),
-			CornerRadiusTopLeft = 3,
-			CornerRadiusTopRight = 3,
-			CornerRadiusBottomLeft = 3,
-			CornerRadiusBottomRight = 3,
 			ContentMarginLeft = 4,
 			ContentMarginRight = 4,
 		};
 
+		box.SetCornerRadiusAll(3);
 		box.SetBorderWidthAll(selected ? 3 : 2);
 		return box;
 	}

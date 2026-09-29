@@ -52,6 +52,9 @@
 [ext_resource type="Texture2D" uid="uid://c20dhnp2gmg0q" path="res://Art/Characters/tancos1.png" id="npc_tancos1"]
 [ext_resource type="Texture2D" uid="uid://dmvuf1u3t5us7" path="res://Art/Characters/tancos2.png" id="npc_tancos2"]
 [ext_resource type="Texture2D" uid="uid://dhhsqflwke7r0" path="res://Art/Characters/tancos3.png" id="npc_tancos3"]
+[ext_resource type="Texture2D" path="res://Art/Characters/radics.png" id="npc_radics"]
+[ext_resource type="Texture2D" path="res://Art/Characters/head_radics.png" id="head_radics"]
+[ext_resource type="Script" path="res://Scripts/Menu/PauseMenu.cs" id="pause_menu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tiles"]
 texture = ExtResource("2_tiles")
@@ -909,18 +912,28 @@ layout_mode = 2
 [node name="CanvasLayer" type="CanvasLayer" parent="Player" unique_id=1968046471]
 
 [node name="PanelContainer" type="PanelContainer" parent="Player/CanvasLayer" unique_id=1383394823]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 553.0
-offset_right = 167.0
-offset_bottom = 638.0
+offset_top = -95.0
+offset_right = 180.0
+offset_bottom = -10.0
+grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_xrivr")
 
 [node name="PhoneBindLabel" type="RichTextLabel" parent="Player/CanvasLayer/PanelContainer" unique_id=2054138378]
 layout_mode = 2
 bbcode_enabled = true
-text = "[color=yellow]LMB[/color] - Használat
+text = "[color=yellow]WASD[/color] - Mozgás
+[color=yellow]Space[/color] - Ugrás
 [color=yellow]E[/color] - Interakció
-[color=yellow]F1[/color] - Telefon"
+[color=yellow]F[/color] - Kocsi be/ki
+[color=yellow]LMB / Q[/color] - Használat
+[color=yellow]1-6[/color] - Tárgy választás
+[color=yellow]F1[/color] - Telefon
+[color=yellow]N[/color] - Éjszaka
+[color=yellow]Esc[/color] - Menü"
 fit_content = true
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1501,6 +1514,40 @@ Lines = PackedStringArray("Finlandia, dupla? Ne nézz így rám.", "Ez már a h�
 Options = PackedStringArray("Egy Finlandiát kérek.|finlandia|3500|Tessék. Kifelé menet ne a falnak menj.", "Csak vizet.||0|Víz nincs. Van Finlandia.")
 Sound = NodePath("../Sfx")
 
+[node name="Radics" type="StaticBody2D" parent="Szorakozohely"]
+position = Vector2(4000, 1424)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Szorakozohely/Radics"]
+shape = SubResource("RectangleShape2D_ferike")
+
+[node name="Sprite2D" type="Sprite2D" parent="Szorakozohely/Radics"]
+position = Vector2(0, -6)
+texture = ExtResource("npc_radics")
+
+[node name="Head" type="Sprite2D" parent="Szorakozohely/Radics"]
+texture_filter = 2
+position = Vector2(0, -15)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("head_radics")
+
+[node name="Label" type="Label" parent="Szorakozohely/Radics"]
+offset_left = -90.0
+offset_top = -76.0
+offset_right = 90.0
+offset_bottom = -34.0
+theme_override_colors/font_color = Color(1, 0.79, 0.16, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 10
+text = "Radics Attila"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Npc" type="Node2D" parent="Szorakozohely/Radics"]
+script = ExtResource("13_npc")
+Lines = PackedStringArray("VIP-ben ülök, tesó. Te hol ülsz?", "Na, Márió. Hallom, élőzöl. Engem is mutass!", "Az aura nem jön magától. Meg kell dolgozni érte.")
+Options = PackedStringArray("Mi a titkod, Attila?||0|Edzés, szolid séró, és soha nem nézek a kamerába. Csak ha fizetnek.", "Csinálunk egy közös képet?||0|Ha kiteszed, jelölj meg. Ha nem jelölsz, nem ismerlek.", "Hány aurád van?||0|Nem számolom. Aki számolja, annak kevés van.")
+
 [node name="Tancos1" type="StaticBody2D" parent="Szorakozohely" unique_id=1967164050]
 position = Vector2(3776, 1520)
 
@@ -1513,8 +1560,8 @@ texture = ExtResource("npc_tancos1")
 
 [node name="Npc" type="Node2D" parent="Szorakozohely/Tancos1" unique_id=197727010]
 script = ExtResource("13_npc")
-Lines = PackedStringArray("Ne bámulj, táncolj!", "Jó a seród. Ki csinálta?")
-Options = PackedStringArray("Táncolsz velem?||0|Ha bírod a tempót, főnök.", "Ferike csinálta a serómat.||0|Akkor Ferike érti a dolgát.")
+Lines = PackedStringArray("Ne bámulj, táncolj!", "Jó a séród. Ki csinálta?")
+Options = PackedStringArray("Táncolsz velem?||0|Ha bírod a tempót, főnök.", "Ferike csinálta a sérómat.||0|Akkor Ferike érti a dolgát.")
 
 [node name="Label" type="Label" parent="Szorakozohely/Tancos1" unique_id=1007224522]
 offset_left = -90.0
@@ -1865,6 +1912,9 @@ position = Vector2(1998, 1698)
 
 [node name="Quests" type="CanvasLayer" parent="." unique_id=368179543]
 script = ExtResource("30_quests")
+
+[node name="PauseMenu" type="CanvasLayer" parent="."]
+script = ExtResource("pause_menu")
 
 [node name="SaveGame" type="Node" parent="." unique_id=504056308]
 script = ExtResource("31_savegame")

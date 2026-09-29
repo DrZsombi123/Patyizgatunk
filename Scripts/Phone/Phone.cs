@@ -4,7 +4,7 @@ using Godot;
 // Rajta a TikTok LIVE, a valódi mintájára: élő kamerakép Márióról, nézőszám, lájkok (szívek),
 // kommentek, ajándékok kombóval, követők, a végén összegző képernyő.
 // Az ajándékok rózsában (érme) gyűlnek, a főképernyőn pénzre váltjuk.
-// Kocsiból élőzve kétszer gyorsabban jönnek a nézők és 4 mp-enként +1 aura jár.
+// Kocsiból élőzve másfélszer több a néző, és menet közben 4 mp-enként +1 aura jár.
 // ponytail: a UI kódból épül, mint a Dialogue és a Hotbar - egy CanvasLayer node a World-ben.
 // A képernyő fix méretű, ezért abszolút pozíciókkal dolgozunk, nem containerekkel.
 public partial class Phone : CanvasLayer
@@ -95,17 +95,16 @@ public partial class Phone : CanvasLayer
 
 	private float _viewers = 0.0f;
 	private int _peakViewers = 0;
-	private int _roses = 0;          // beváltatlan egyenleg
 	private int _liveRoses = 0;      // ebben az élőben kapott
 	private float _likes = 0.0f;
-	private int _followers = 1234;
 	private int _newFollowers = 0;
 	private float _liveTime = 0.0f;
 	private float _carAuraTime = 0.0f;
+	private Vector2 _lastPosition;   // a kocsi haladásához (parkolva nem jár aura)
 
 	// mentéshez
-	public int Followers { get => _followers; set => _followers = value; }
-	public int Roses { get => _roses; set => _roses = value; }
+	public int Followers { get; set; } = 1234;
+	public int Roses { get; set; } = 0;   // beváltatlan egyenleg
 
 	private float _heartBudget = 0.0f;
 	private float _waveCooldown = 0.0f;
@@ -128,10 +127,10 @@ public partial class Phone : CanvasLayer
 
 		_clock.Text = System.DateTime.Now.ToString("HH:mm");
 
-		if (_live && Player != null)
+		if (_live)
 			Stream(dt);
 
-		if (_open && Player != null)
+		if (_open)
 			_cameraEye.GlobalPosition = Player.GlobalPosition + new Vector2(0, -12);
 
 		Refresh();
@@ -227,11 +226,15 @@ public partial class Phone : CanvasLayer
 		if (Chance(delta, _viewers / 400.0f, 1.0f))
 		{
 			_newFollowers++;
-			_followers++;
+			Followers++;
 			SystemLine($"{RandomName()} követ téged ✅");
 		}
 
-		if (!Player.InCar)
+		// parkoló kocsiból élőzve nem farmolható az aura: csak menet közben jár
+		bool moving = Player.GlobalPosition.DistanceTo(_lastPosition) > 10.0f * delta;
+		_lastPosition = Player.GlobalPosition;
+
+		if (!Player.InCar || !moving)
 			return;
 
 		_carAuraTime += delta;
@@ -287,7 +290,7 @@ public partial class Phone : CanvasLayer
 		int count = chosen.Value == 1 ? _rng.RandiRange(1, 5) : 1;
 		int value = chosen.Value * count;
 
-		_roses += value;
+		Roses += value;
 		_liveRoses += value;
 		Quests.Report("rozsa", value);
 
@@ -323,11 +326,11 @@ public partial class Phone : CanvasLayer
 
 	private void CashOut()
 	{
-		if (_roses == 0 || Player == null)
+		if (Roses == 0)
 			return;
 
-		Player.Money += _roses * RoseValue;
-		_roses = 0;
+		Player.Money += Roses * RoseValue;
+		Roses = 0;
 	}
 
 	// ---------- kommentek, szívek ----------
@@ -417,15 +420,15 @@ public partial class Phone : CanvasLayer
 		_viewersLabel.Text = $"👁 {Short(viewers)}";
 		_likesLabel.Text = $"{Short((int)_likes)} lájk";
 		_rankLabel.Text = $"🔥 Óránkénti rangsor · {Mathf.Max(1, 99 - viewers / 5)}.";
-		_balanceLabel.Text = $"🌹 {Short(_roses)}";
+		_balanceLabel.Text = $"🌹 {Short(Roses)}";
 		_waveButton.Text = _waveCooldown > 0 ? $"👋 {Mathf.CeilToInt(_waveCooldown)}" : "👋 Köszönj";
 		_waveButton.Disabled = _waveCooldown > 0;
 		_askButton.Text = _askCooldown > 0 ? $"🌹 {Mathf.CeilToInt(_askCooldown)}" : "🌹 Kérj rózsát";
 		_askButton.Disabled = _askCooldown > 0;
 
-		_followersLabel.Text = $"@kunu.mario · {Short(_followers)} követő";
-		_walletLabel.Text = $"🌹 {_roses} rózsa  =  {Ft(_roses * RoseValue)}";
-		_cashButton.Disabled = _roses == 0;
+		_followersLabel.Text = $"@kunu.mario · {Short(Followers)} követő";
+		_walletLabel.Text = $"🌹 {Roses} rózsa  =  {Ft(Roses * RoseValue)}";
+		_cashButton.Disabled = Roses == 0;
 
 		// csukott telefonnál is lássuk, hogy megy az élő
 		_liveBadge.Visible = _live && !_open;

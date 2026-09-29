@@ -15,9 +15,12 @@ public partial class TitleScreen : Control
 		_video = GetNode<VideoStreamPlayer>("VideoStreamPlayer");
 		_audio = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
 
-		// első indulás: az autoplay elölről kezdi, nincs mit folytatni
+		// első indulás: az elmentett hangerő/V-sync, és az autoplay elölről kezdi, nincs mit folytatni
 		if (_videoPosition <= 0.0)
+		{
+			Options.Apply();
 			return;
+		}
 
 		_video.StreamPosition = _videoPosition;
 		_audio.Play(_audioPosition);

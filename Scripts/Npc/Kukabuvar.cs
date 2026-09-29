@@ -15,8 +15,6 @@ public partial class Kukabuvar : Area2D
 
 	private Node2D _guy;
 	private Label _label;
-	private Timer _hide;
-	private Timer _reload;
 	private bool _armed = true;
 	private int _next = 0;
 
@@ -27,15 +25,6 @@ public partial class Kukabuvar : Area2D
 
 		_guy.Visible = false;
 		_label.Visible = false;
-
-		_hide = NewTimer(() =>
-		{
-			_guy.Visible = false;
-			_label.Visible = false;
-			_reload.Start(Cooldown);
-		});
-
-		_reload = NewTimer(() => _armed = true);
 
 		BodyEntered += body => { if (body is Player player) JumpOut(player); };
 	}
@@ -55,20 +44,14 @@ public partial class Kukabuvar : Area2D
 		Vector2 target = _guy.Position;
 		_guy.Position = target + new Vector2(0, 26);
 
-		CreateTween()
-			.TweenProperty(_guy, "position", target, 0.25)
-			.SetTrans(Tween.TransitionType.Back)
-			.SetEase(Tween.EaseType.Out);
+		// egy tween visz végig mindent: kipattan, ShowTime után visszabújik, Cooldown után újra éles
+		Tween tween = CreateTween();
+		tween.TweenProperty(_guy, "position", target, 0.25).SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.Out);
+		tween.TweenInterval(ShowTime - 0.25);
+		tween.TweenCallback(Callable.From(() => { _guy.Visible = false; _label.Visible = false; }));
+		tween.TweenInterval(Cooldown);
+		tween.TweenCallback(Callable.From(() => { _armed = true; }));
 
 		player.Scare();
-		_hide.Start(ShowTime);
-	}
-
-	private Timer NewTimer(System.Action onTimeout)
-	{
-		var timer = new Timer { OneShot = true };
-		AddChild(timer);
-		timer.Timeout += onTimeout;
-		return timer;
 	}
 }

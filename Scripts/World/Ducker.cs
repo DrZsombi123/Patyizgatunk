@@ -18,15 +18,11 @@ public partial class Ducker : AudioStreamPlayer
 
 	public override void _Ready()
 	{
-		if (Music != null)
-			_normalDb = Music.VolumeDb;
+		_normalDb = Music.VolumeDb;
 	}
 
 	public override void _Process(double delta)
 	{
-		if (Music == null)
-			return;
-
 		float target = Playing ? _normalDb + DuckDb : _normalDb;
 
 		Music.VolumeDb = Mathf.Lerp(Music.VolumeDb, target, Mathf.Min(1.0f, (float)delta * Speed));
