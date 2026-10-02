@@ -41,6 +41,7 @@
 [ext_resource type="Script" uid="uid://dpmfpb7t4rw7r" path="res://Scripts/Hud/Quests.cs" id="30_quests"]
 [ext_resource type="Script" uid="uid://e81sum5i5w6u" path="res://Scripts/World/SaveGame.cs" id="31_savegame"]
 [ext_resource type="AudioStream" uid="uid://u0kuxx0i7jqn" path="res://Art/Music/gurulgatok.mp3" id="46_0fglf"]
+[ext_resource type="Texture2D" uid="uid://cs6dc3dms8u3k" path="res://Art/Characters/head_radics.png" id="head_radics"]
 [ext_resource type="Texture2D" uid="uid://cpnkcwcd3tkn3" path="res://Art/Characters/csapos.png" id="npc_csapos"]
 [ext_resource type="Texture2D" uid="uid://boqx6t1gsb1ue" path="res://Art/Characters/csoves1.png" id="npc_csoves1"]
 [ext_resource type="Texture2D" uid="uid://clrm2ayv7m55s" path="res://Art/Characters/csoves2.png" id="npc_csoves2"]
@@ -49,12 +50,11 @@
 [ext_resource type="Texture2D" uid="uid://cig42ks2gtign" path="res://Art/Characters/elado.png" id="npc_elado"]
 [ext_resource type="Texture2D" uid="uid://d0sfbe2rg7fky" path="res://Art/Characters/kidobo.png" id="npc_kidobo"]
 [ext_resource type="Texture2D" uid="uid://c8ik0g03mo78j" path="res://Art/Characters/krupie.png" id="npc_krupie"]
+[ext_resource type="Texture2D" uid="uid://bjw1pwierv38p" path="res://Art/Characters/radics.png" id="npc_radics"]
 [ext_resource type="Texture2D" uid="uid://c20dhnp2gmg0q" path="res://Art/Characters/tancos1.png" id="npc_tancos1"]
 [ext_resource type="Texture2D" uid="uid://dmvuf1u3t5us7" path="res://Art/Characters/tancos2.png" id="npc_tancos2"]
 [ext_resource type="Texture2D" uid="uid://dhhsqflwke7r0" path="res://Art/Characters/tancos3.png" id="npc_tancos3"]
-[ext_resource type="Texture2D" path="res://Art/Characters/radics.png" id="npc_radics"]
-[ext_resource type="Texture2D" path="res://Art/Characters/head_radics.png" id="head_radics"]
-[ext_resource type="Script" path="res://Scripts/Menu/PauseMenu.cs" id="pause_menu"]
+[ext_resource type="Script" uid="uid://cuveo6ujyyb3q" path="res://Scripts/Menu/PauseMenu.cs" id="pause_menu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tiles"]
 texture = ExtResource("2_tiles")
@@ -899,8 +899,8 @@ layout_mode = 2
 [node name="AuraLabel" type="Label" parent="Player/DrunkHUD/MarginContainer/VBoxContainer" unique_id=899622962 node_paths=PackedStringArray("Player")]
 layout_mode = 2
 script = ExtResource("7_fq1sc")
-Player = NodePath("../../../..")
 ArcadeFont = ExtResource("8_ivbkn")
+Player = NodePath("../../../..")
 
 [node name="StatusLabel" type="Label" parent="Player/DrunkHUD/MarginContainer/VBoxContainer" unique_id=65662372]
 layout_mode = 2
@@ -916,8 +916,8 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = -95.0
-offset_right = 180.0
+offset_top = -233.0
+offset_right = 193.0
 offset_bottom = -10.0
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_xrivr")
@@ -1514,23 +1514,23 @@ Lines = PackedStringArray("Finlandia, dupla? Ne nézz így rám.", "Ez már a h�
 Options = PackedStringArray("Egy Finlandiát kérek.|finlandia|3500|Tessék. Kifelé menet ne a falnak menj.", "Csak vizet.||0|Víz nincs. Van Finlandia.")
 Sound = NodePath("../Sfx")
 
-[node name="Radics" type="StaticBody2D" parent="Szorakozohely"]
+[node name="Radics" type="StaticBody2D" parent="Szorakozohely" unique_id=1575197278]
 position = Vector2(4000, 1424)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Szorakozohely/Radics"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Szorakozohely/Radics" unique_id=798626373]
 shape = SubResource("RectangleShape2D_ferike")
 
-[node name="Sprite2D" type="Sprite2D" parent="Szorakozohely/Radics"]
+[node name="Sprite2D" type="Sprite2D" parent="Szorakozohely/Radics" unique_id=1523369839]
 position = Vector2(0, -6)
 texture = ExtResource("npc_radics")
 
-[node name="Head" type="Sprite2D" parent="Szorakozohely/Radics"]
+[node name="Head" type="Sprite2D" parent="Szorakozohely/Radics" unique_id=2001204943]
 texture_filter = 2
 position = Vector2(0, -15)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("head_radics")
 
-[node name="Label" type="Label" parent="Szorakozohely/Radics"]
+[node name="Label" type="Label" parent="Szorakozohely/Radics" unique_id=786561505]
 offset_left = -90.0
 offset_top = -76.0
 offset_right = 90.0
@@ -1543,7 +1543,7 @@ text = "Radics Attila"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Npc" type="Node2D" parent="Szorakozohely/Radics"]
+[node name="Npc" type="Node2D" parent="Szorakozohely/Radics" unique_id=1704536869]
 script = ExtResource("13_npc")
 Lines = PackedStringArray("VIP-ben ülök, tesó. Te hol ülsz?", "Na, Márió. Hallom, élőzöl. Engem is mutass!", "Az aura nem jön magától. Meg kell dolgozni érte.")
 Options = PackedStringArray("Mi a titkod, Attila?||0|Edzés, szolid séró, és soha nem nézek a kamerába. Csak ha fizetnek.", "Csinálunk egy közös képet?||0|Ha kiteszed, jelölj meg. Ha nem jelölsz, nem ismerlek.", "Hány aurád van?||0|Nem számolom. Aki számolja, annak kevés van.")
@@ -1709,10 +1709,10 @@ Options = PackedStringArray("Beengedsz?||0|Cipő rendben. Arc... rendben. Mehets
 
 [node name="Night" type="CanvasModulate" parent="." unique_id=1642494961 node_paths=PackedStringArray("Map", "Props", "Emissive")]
 script = ExtResource("6_daynight")
+LightTexture = SubResource("GradientTexture2D_light")
 Map = NodePath("../Map")
 Props = NodePath("../Props")
 Emissive = NodePath("../NightLights/Emissive")
-LightTexture = SubResource("GradientTexture2D_light")
 
 [node name="NightLights" type="CanvasLayer" parent="." unique_id=1936071591]
 follow_viewport_enabled = true
@@ -1913,7 +1913,7 @@ position = Vector2(1998, 1698)
 [node name="Quests" type="CanvasLayer" parent="." unique_id=368179543]
 script = ExtResource("30_quests")
 
-[node name="PauseMenu" type="CanvasLayer" parent="."]
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=468035431]
 script = ExtResource("pause_menu")
 
 [node name="SaveGame" type="Node" parent="." unique_id=504056308]
