@@ -3,7 +3,7 @@
 // Beszélhető NPC. A player InteractArea-ja a szülő testet érzékeli, E -> felugró ablak.
 // A név a testvér "Label"-ből jön, a szövegek a Lines-ból körbe.
 // Egy válaszlehetőség formátuma: "felirat|hatás|ár|válasz".
-// hatás: patyi, pia, energia, hajvagas, kulcs vagy üres (csak duma).
+// hatás: patyi, pia, energia, hajvagas, kulcs, potkulcs vagy üres (csak duma).
 public partial class Npc : Node2D
 {
 	[Export]
@@ -32,9 +32,15 @@ public partial class Npc : Node2D
 	}
 
 	// A most választható opciók: ami már nem értelmes (kulcs, ha nálunk van), nem jelenik meg.
+	// Ha a rendőrök lefoglalták a kulcsot, a rendes helyett a pótkulcs kérhető.
 	public string[] Available(Player player)
 	{
-		return System.Array.FindAll(Options, option => !(player.HasCarKey && Effect(option) == "kulcs"));
+		return System.Array.FindAll(Options, option => Effect(option) switch
+		{
+			"kulcs" => !player.HasCarKey && !player.KeySeized,
+			"potkulcs" => !player.HasCarKey && player.KeySeized,
+			_ => true,
+		});
 	}
 
 	public static string Label(string option) => option.Split('|')[0];
@@ -65,11 +71,14 @@ public partial class Npc : Node2D
 			case "finlandia":
 			case "energia":
 			case "kulcs":
+			case "potkulcs":
+				bool key = effect is "kulcs" or "potkulcs";
+
 				// tele a csík: nem vesszük el a pénzt sem
-				if (!Hotbar.Current.Add(effect))
+				if (!Hotbar.Current.Add(key ? "kulcs" : effect))
 					return "Tele a zsebed, Márió. Használj el előbb valamit.";
 
-				if (effect == "kulcs")
+				if (key)
 					player.HasCarKey = true;
 
 				break;
