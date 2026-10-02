@@ -35,7 +35,7 @@ public partial class Player : CharacterBody2D
 
 	public bool IsBlackedOut => _drunk.IsBlackedOut;
 
-	public UltraPatyi Secret { get; set; }   // ha a rejtett gomb mellett állunk, az E azt nyomja meg
+	public UltraPatyi Secret { get; set; }   // ha a rejtett gomb mellett állunk, az E azt aktiválja, nem a Brendon párbeszédet
 
 	// kaszinós gépek/asztalok, amelyek területén állunk: E-re a legközelebbi játék nyílik meg
 	public System.Collections.Generic.HashSet<CasinoStation> Stations { get; } = new();
@@ -128,7 +128,7 @@ public partial class Player : CharacterBody2D
 		// a rejtett gomb elsőbbséget kap, különben a mellettünk álló Brendonnal is dumálnánk
 		if (Secret != null)
 		{
-			Secret.Trigger();
+			Secret.Trigger(this);
 			return;
 		}
 
@@ -234,7 +234,7 @@ public partial class Player : CharacterBody2D
 
 		switch (item)
 		{
-			case "patyi": TakePatyi(); return true;
+			case "patyi": GetTree().CurrentScene.GetNode<UltraPatyi>("UltraPatyi").Trigger(this); return true;
 			case "jack": DrinkPia(15.0f); return true;        // mennyit ad a részegséghez (%)
 			case "finlandia": DrinkPia(20.0f); return true;
 			case "energia": DrinkEnergy(); return true;
