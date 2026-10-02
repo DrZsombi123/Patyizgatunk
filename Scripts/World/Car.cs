@@ -77,6 +77,7 @@ public partial class Car : CharacterBody2D
 	private Tween _sirenTween;
 
 	private Label _hint;
+	private Node2D _lights;   // fényszóró + féklámpa: a "night_lights" csoportban vannak, a DayNight csak éjjel gyújtja fel
 	private AudioStreamPlayer _exitSfx;
 	private AudioStreamPlayer _enterSfx;
 	private AudioStreamPlayer _drivingSfx;
@@ -94,7 +95,8 @@ public partial class Car : CharacterBody2D
 	public override void _Ready()
 	{
 		_hint = GetNode<Label>("Hint");
-		_exitSfx = GetNode<AudioStreamPlayer>("ExitSfx");
+		_lights = GetNode<Node2D>("Lights");
+		_exitSfx =GetNode<AudioStreamPlayer>("ExitSfx");
 		_enterSfx = GetNode<AudioStreamPlayer>("EnterSfx");
 		_drivingSfx = GetNode<AudioStreamPlayer>("DrivingSfx");
 
@@ -137,6 +139,9 @@ public partial class Car : CharacterBody2D
 			UpdateHint();
 
 		UpdateMusic((float)delta);
+
+		// a lámpák csak akkor égnek, ha ül valaki a kocsiban
+		_lights.Visible = _driver != null;
 
 		if (Dialogue.IsOpen || !Input.IsActionJustPressed("vehicle"))
 			return;
