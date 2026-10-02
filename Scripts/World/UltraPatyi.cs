@@ -109,7 +109,7 @@ public partial class UltraPatyi : Area2D
 			Stop();
 	}
 
-	public void Trigger()
+	public void Trigger(Player _player)
 	{
 		if (_left > 0.0f || _player == null)
 			return;
