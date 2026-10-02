@@ -1089,7 +1089,7 @@ vertical_alignment = 2
 [node name="Npc" type="Node2D" parent="Brendon" unique_id=236096528]
 script = ExtResource("13_npc")
 Lines = PackedStringArray("Megyek utánad, Márió. Mindig.", "Mondjad, főnök.", "Nekem is vegyél egyet, ne csak magadnak.")
-Options = PackedStringArray("Add ide a kocsikulcsot!|kulcs|0|Nesze. De ha összetöröd, gyalog mész haza.", "Mennyi lóvém van?||0|Van még {penz} Ft-od. Én számolom.", "Maradj mögöttem.||0|Megyek utánad, Márió. Mindig.")
+Options = PackedStringArray("Add ide a kocsikulcsot!|kulcs|0|Nesze. De ha összetöröd, gyalog mész haza.", "Lefoglalták a kulcsot...|potkulcs|0|Mondtam, hogy ne igyál a volánnál! Nesze a pótkulcs, de ez az utolsó.", "Mennyi lóvém van?||0|Van még {penz} Ft-od. Én számolom.", "Maradj mögöttem.||0|Megyek utánad, Márió. Mindig.")
 
 [node name="Park" type="Node2D" parent="." unique_id=1531917511]
 y_sort_enabled = true

@@ -31,6 +31,8 @@ public partial class Player : CharacterBody2D
 
 	public bool HasCarKey { get; set; } = false;   // Brendontól lehet elkérni
 
+	public bool KeySeized { get; set; } = false;   // a rendőrök már lefoglalták egyszer -> Brendon pótkulcsot ad
+
 	public bool InCar { get; private set; } = false;
 
 	public bool IsBlackedOut => _drunk.IsBlackedOut;
