@@ -3,7 +3,7 @@ using Godot;
 // Minecraft-stílusú csík a képernyő alján: 6 rekesz, a kijelölt sárga kerettel.
 // 1-6 vagy egérgörgő vált, kattintás (vagy Q) elhasználja a kijelöltet.
 // A rekeszben az Art/Items/<név>.png; ha nincs ilyen kép, a tárgy neve látszik.
-// ponytail: a UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
+// A felület kódból épül (nincs hozzá .tscn), a World-ben egy CanvasLayer node.
 public partial class Hotbar : CanvasLayer
 {
 	public const int Slots = 6;
@@ -170,7 +170,7 @@ public partial class Hotbar : CanvasLayer
 		}
 	}
 
-	// ponytail: a fájl a tárgy nevéből jön, nincs hozzá tábla. Nincs kép -> marad a szöveg.
+	// A kép fájlneve a tárgy neve. Ha nincs ilyen kép, a tárgy neve látszik.
 	private static Texture2D Icon(string item)
 	{
 		if (item == null)

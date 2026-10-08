@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // Lakatos Brendon követi Kunu Máriót: a player nyomvonalán megy, de lemaradva.
 // Így nem akad el az épületekben és nem lóg a nyakunkon.
-// ponytail: a scene-ben collision_mask = 0 (a 2-es rétegen van, hogy a player E-je lássa), vagyis átmegy mindenen. A nyomvonal
+// A scene-ben collision_mask = 0 (a 2-es rétegen van, hogy a player E-je lássa), vagyis átmegy mindenen. A nyomvonal
 // eleve járható, és így nem tolja el a playert az ajtókban (casino, bolt, fodrászat).
 public partial class Follower : CharacterBody2D
 {
@@ -57,7 +57,7 @@ public partial class Follower : CharacterBody2D
 
 		Velocity = Vector2.Zero;
 
-		// ponytail: a nyomvonal hosszát a pontok számából becsüljük (Step-enként vesszük fel)
+		// A nyomvonal hosszát a pontok számából becsüljük (TrailStep px-enként veszünk fel egy pontot)
 		if (_trail.Count * TrailStep > Distance)
 		{
 			if (GlobalPosition.DistanceTo(_trail[0]) < 6.0f)

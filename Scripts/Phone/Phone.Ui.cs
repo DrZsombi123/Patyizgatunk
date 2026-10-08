@@ -264,7 +264,7 @@ public partial class Phone
 
 	private static Texture2D _playerAvatar;
 
-	// Márió feje kör alakban. ponytail: a ClipChildren a (szintén vágott) képernyőn belül nem vág,
+	// Márió feje kör alakban. A ClipChildren a (szintén vágott) képernyőn belül nem vág,
 	// ezért egyszer kivágjuk magát a képet: négyzet a fejből, körön kívül átlátszó, belül sötét háttér.
 	private static void PlayerAvatar(Control parent, Vector2 position, float size)
 	{

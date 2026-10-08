@@ -3,7 +3,7 @@
 // Beszélhető NPC. A player InteractArea-ja a szülő testet érzékeli, E -> felugró ablak.
 // A név a testvér "Label"-ből jön, a szövegek a Lines-ból körbe.
 // Egy válaszlehetőség formátuma: "felirat|hatás|ár|válasz".
-// hatás: patyi, pia, energia, hajvagas, kulcs, potkulcs vagy üres (csak duma).
+// hatás: patyi, jack, finlandia, energia, hajvagas, kulcs, potkulcs vagy üres (csak duma).
 public partial class Npc : Node2D
 {
 	[Export]
@@ -62,7 +62,6 @@ public partial class Npc : Node2D
 		if (player.Money < price)
 			return $"Nincs meg a {price} Ft. Gyere vissza, ha összejött.";
 
-		// ponytail: pár hatás van, ezért switch. Ha sok lesz, exportált értékek jönnek.
 		// A szerek a hotbarba kerülnek, onnan lehet elsütni őket (Q).
 		switch (effect)
 		{

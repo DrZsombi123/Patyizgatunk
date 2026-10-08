@@ -5,7 +5,7 @@ using Godot;
 // kommentek, ajándékok kombóval, követők, a végén összegző képernyő.
 // Az ajándékok rózsában (érme) gyűlnek, a főképernyőn pénzre váltjuk.
 // Kocsiból élőzve másfélszer több a néző, és menet közben 4 mp-enként +1 aura jár.
-// ponytail: a UI kódból épül, mint a Dialogue és a Hotbar - egy CanvasLayer node a World-ben.
+// A felület kódból épül (nincs hozzá .tscn), a World-ben egy CanvasLayer node.
 // A képernyő fix méretű, ezért abszolút pozíciókkal dolgozunk, nem containerekkel.
 public partial class Phone : CanvasLayer
 {
@@ -219,7 +219,7 @@ public partial class Phone : CanvasLayer
 		if (Chance(delta, 0.2f + _viewers / 80.0f, 1.5f))
 			SystemLine($"{RandomName()} csatlakozott 👋");
 
-		// átlag ~10 rózsa / ajándék -> 100 néző nagyjából 1,2 rózsa/mp (~60 Ft/mp)
+		// 100 nézőnél kb. 8 mp-enként jön ajándék, átlagosan ~8 rózsa értékben (~1 rózsa/mp, ~50 Ft/mp)
 		if (Chance(delta, _viewers / 800.0f * (_askBoost > 0 ? 3.0f : 1.0f), 2.0f))
 			SendGift();
 

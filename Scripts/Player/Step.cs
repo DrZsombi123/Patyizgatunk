@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 
 // Nincs járás-spritesheet, ezért kódból lépünk: a sprite-ok bólintanak és súlyt váltanak.
-// ponytail: három helyen kell (player, Brendon, táncosok), ezért közös. Forgatás helyett
+// Három helyen kell (player, Brendon, táncosok), ezért közös. Forgatás helyett
 // oldalirányú eltolás, mert a fej külön Sprite2D és a saját közepe körül csúnyán fordulna.
 public static class Step
 {
