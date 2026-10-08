@@ -34,7 +34,7 @@ public partial class Car : CharacterBody2D
 
 	// Rendőrség: részegen vezetve PoliceCheckSeconds mp-enként dobunk (minél részegebb, annál nagyobb eséllyel).
 	// Ha jönnek, ChaseSeconds mp-ig nem szabad megállni és kiszállni. Megúszva aura jár,
-	// elkapva bírság, auravesztés, és lefoglalják a kulcsot (Brendontól újra el kell kérni).
+	// elkapva bírság, auravesztés, és lefoglalják a kulcsot (Brendon ad pótkulcsot).
 	[Export]
 	public float PoliceCheckSeconds { get; set; } = 10.0f;
 
@@ -437,6 +437,7 @@ public partial class Car : CharacterBody2D
 		_driver.Money -= fine;
 		_driver.AddAura(-BustedAura);
 		_driver.HasCarKey = false;
+		_driver.KeySeized = true;
 		Hotbar.Current?.Remove("kulcs");
 
 		Quests.Toast($"Elkaptak! -{fine} Ft, -{BustedAura} AURA, a kulcsot lefoglalták", Red);

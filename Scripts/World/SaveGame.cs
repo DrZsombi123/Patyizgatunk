@@ -57,6 +57,7 @@ public partial class SaveGame : Node
 		cfg.SetValue("player", "money", _player.Money);
 		cfg.SetValue("player", "aura", _player.SavedAura);
 		cfg.SetValue("player", "key", _player.HasCarKey);
+		cfg.SetValue("player", "key_seized", _player.KeySeized);
 
 		cfg.SetValue("car", "position", _car.GlobalPosition);
 		cfg.SetValue("car", "rotation", _car.Rotation);
@@ -85,6 +86,7 @@ public partial class SaveGame : Node
 		_player.Money = (int)cfg.GetValue("player", "money", _player.Money);
 		_player.RestoreAura((int)cfg.GetValue("player", "aura", 0));
 		_player.HasCarKey = (bool)cfg.GetValue("player", "key", false);
+		_player.KeySeized = (bool)cfg.GetValue("player", "key_seized", false);
 
 		_car.GlobalPosition = (Vector2)cfg.GetValue("car", "position", _car.GlobalPosition);
 		_car.Rotation = (float)cfg.GetValue("car", "rotation", _car.Rotation);
