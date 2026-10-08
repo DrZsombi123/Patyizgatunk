@@ -5,7 +5,7 @@ using Godot;
 // kommentek, ajándékok kombóval, követők, a végén összegző képernyő.
 // Az ajándékok rózsában (érme) gyűlnek, a főképernyőn pénzre váltjuk.
 // Kocsiból élőzve másfélszer több a néző, és menet közben 4 mp-enként +1 aura jár.
-// ponytail: a UI kódból épül, mint a Dialogue és a Hotbar - egy CanvasLayer node a World-ben.
+// A UI kódból épül, mint a Dialogue és a Hotbar - egy CanvasLayer node a World-ben.
 // A képernyő fix méretű, ezért abszolút pozíciókkal dolgozunk, nem containerekkel.
 public partial class Phone : CanvasLayer
 {

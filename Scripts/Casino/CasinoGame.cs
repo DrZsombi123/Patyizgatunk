@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 // Nyitva a játék megáll (GetTree().Paused), ez a CanvasLayer viszont fut tovább (ProcessMode.Always),
 // így nem kell a Player-ben/Car-ban külön figyelni, hogy épp játszunk-e.
 // Nagy nyerés (legalább a tét ötszöröse) +10 aura.
-// ponytail: a UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
+// A UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
 public partial class CasinoGame : CanvasLayer
 {
 	public static CasinoGame Current { get; private set; }

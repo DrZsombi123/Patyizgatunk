@@ -1,7 +1,7 @@
 using Godot;
 
 // Brendon Mercedes C-osztálya: F-fel be/ki, de csak kocsikulccsal (Brendontól lehet elkérni).
-// ponytail: vezetés közben a player a kocsin ül rejtve, így a kamera és a követő
+// Vezetés közben a player a kocsin ül rejtve, így a kamera és a követő
 // Brendon marad a helyén, nem kell külön kocsi-kamera.
 public partial class Car : CharacterBody2D
 {
@@ -96,7 +96,7 @@ public partial class Car : CharacterBody2D
 	{
 		_hint = GetNode<Label>("Hint");
 		_lights = GetNode<Node2D>("Lights");
-		_exitSfx =GetNode<AudioStreamPlayer>("ExitSfx");
+		_exitSfx = GetNode<AudioStreamPlayer>("ExitSfx");
 		_enterSfx = GetNode<AudioStreamPlayer>("EnterSfx");
 		_drivingSfx = GetNode<AudioStreamPlayer>("DrivingSfx");
 
@@ -492,7 +492,7 @@ public partial class Car : CharacterBody2D
 		sfx.Play();
 	}
 
-	// ponytail: Stop + elmentett pozíció, nem StreamPaused - úgy a Playing is egyértelmű marad
+	// Stop + elmentett pozíció, nem StreamPaused - úgy a Playing is egyértelmű marad
 	private void PauseMusic()
 	{
 		if (!_drivingSfx.Playing)

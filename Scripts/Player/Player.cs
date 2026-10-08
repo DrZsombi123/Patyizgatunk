@@ -54,7 +54,7 @@ public partial class Player : CharacterBody2D
 	// részegség rendszer (a Player gyereke: "DrunkSystem" Node)
 	private DrunkSystem _drunk;
 
-	// ponytail: egyszerre egy szer hat, az új felülírja a régit
+	// Egyszerre egy szer hat, az új felülírja a régit
 	private Timer _effectTimer;
 	private float _speedMultiplier = 1.0f;
 	private float _wobble = 0.0f;

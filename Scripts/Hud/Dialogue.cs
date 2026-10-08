@@ -3,7 +3,7 @@ using Godot;
 // Felugró párbeszédablak: az NPC neve, egy mondata és a választható válaszok.
 // Válaszolni egérrel, nyilak + Enterrel vagy az 1-9 számokkal lehet, Esc bezár.
 // A kinézet a főmenüt követi: fekete panel fehér kerettel, sárga kijelölés.
-// ponytail: a UI kódból épül, nincs hozzá külön .tscn - egy CanvasLayer node a World-ben.
+// A UI kódból épül, nincs hozzá külön .tscn - egy CanvasLayer node a World-ben.
 public partial class Dialogue : CanvasLayer
 {
 	public static Dialogue Current { get; private set; }

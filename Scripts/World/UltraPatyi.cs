@@ -2,7 +2,7 @@ using Godot;
 
 // Rejtett gomb a sikátorban, a graffiti alatt: E -> ULTRA PATYI MODE.
 // Duration másodpercig kristály hullik a képernyőre, pulzál a szín és lüktet a kamera.
-// ponytail: az egész effekt kódból épül, a scene-ben csak az Area2D + a shape van.
+// Az egész effekt kódból épül, a scene-ben csak az Area2D + a shape van.
 public partial class UltraPatyi : Area2D
 {
 	[Export]

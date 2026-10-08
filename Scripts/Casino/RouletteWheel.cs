@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 // Rajzolt európai rulettkerék (37 zseb) golyóval. Spin(szám): a kerék az egyik irányba,
 // a golyó a másikba pörög, lassul, beesik és a megadott szám zsebében áll meg.
-// ponytail: az eredményt a hívó sorsolja, a kerék csak eljátssza - így a kifizetés és
+// Az eredményt a hívó sorsolja, a kerék csak eljátssza - így a kifizetés és
 // az animáció nem csúszhat szét.
 public partial class RouletteWheel : Control
 {

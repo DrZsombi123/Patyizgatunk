@@ -2,7 +2,7 @@ using Godot;
 
 // Esc: szünet menü (Folytatás / Főmenü / Kilépés), nyitva áll a játék.
 // A nyitott párbeszéd és kaszinó az Esc-et az _Input-ban lenyeli, így ide csak akkor ér, ha más nincs nyitva.
-// ponytail: a UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
+// A UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
 public partial class PauseMenu : CanvasLayer
 {
 	private static readonly Color Yellow = new Color(1, 1, 0);
