@@ -7,7 +7,7 @@ using Godot;
 public partial class AuraLabel : Label
 {
 	[Export] public Player Player { get; set; }
-	[Export] public Font ArcadeFont { get; set; }   // pl. Press Start 2P
+	[Export] public Font ArcadeFont { get; set; }
 	[Export] public int FontSize { get; set; } = 32;
 
 	private static readonly Color Normal = new Color(1.0f, 0.85f, 0.1f);   // árkád sárga

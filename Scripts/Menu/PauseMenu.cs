@@ -2,7 +2,7 @@ using Godot;
 
 // Esc: szünet menü (Folytatás / Főmenü / Kilépés), nyitva áll a játék.
 // A nyitott párbeszéd és kaszinó az Esc-et az _Input-ban lenyeli, így ide csak akkor ér, ha más nincs nyitva.
-// A UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
+// A felület kódból épül (nincs hozzá .tscn), a World-ben egy CanvasLayer node.
 public partial class PauseMenu : CanvasLayer
 {
 	private static readonly Color Yellow = new Color(1, 1, 0);

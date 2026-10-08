@@ -57,7 +57,7 @@ public partial class Follower : CharacterBody2D
 
 		Velocity = Vector2.Zero;
 
-		// A nyomvonal hosszát a pontok számából becsüljük (Step-enként vesszük fel)
+		// A nyomvonal hosszát a pontok számából becsüljük (TrailStep px-enként veszünk fel egy pontot)
 		if (_trail.Count * TrailStep > Distance)
 		{
 			if (GlobalPosition.DistanceTo(_trail[0]) < 6.0f)

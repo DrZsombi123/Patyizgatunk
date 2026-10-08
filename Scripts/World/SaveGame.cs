@@ -3,8 +3,7 @@ using Godot;
 // Mentés a user://save.cfg-be: hely, pénz, aura, kulcs, hotbar, telefon, küldetések, a merci helye.
 // A World legalján él: mire a _Ready-je fut, a többi node már kész, így rögtön betölthetünk.
 // 30 mp-enként és kilépéskor ment. Győzelemkor a Victory törli, a főmenüben "Új játék" is.
-// A részegség, a szerhatások és a séró nem mentődik - betöltés után józanon, rossz séróval
-// indulunk. Ha kell, a DrunkSystem.Drunkness is ide jöhet.
+// A részegség, a szerhatások és a séró nem mentődik: betöltés után józanon, rossz séróval indulunk.
 public partial class SaveGame : Node
 {
 	private const string FilePath = "user://save.cfg";
