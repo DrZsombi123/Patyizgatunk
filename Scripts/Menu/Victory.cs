@@ -1,7 +1,7 @@
 using Godot;
 
 // Győzelmi oldal: elértük a Player.WinAura-t -> buli a klubban, mindenki táncol.
-// ponytail: a klub egy sötét háttér villogó fénnyel, nem a World klubjának másolata.
+// A klub egy sötét háttér villogó fénnyel, nem a World klubjának másolata.
 // Ha kell a valódi belső tér, ide jöhet a klub tile-ja és a táncosok pozíciói.
 public partial class Victory : Control
 {

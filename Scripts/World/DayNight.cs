@@ -82,7 +82,7 @@ public partial class DayNight : CanvasModulate
 	{
 		Color color = new Color(light, 1.0f);
 
-		// ponytail: O(n²) összevonás (egymás melletti neon/kirakat tile-ok = 1 fény), pár száz fénynél bőven elég
+		// O(n²) összevonás (egymás melletti neon/kirakat tile-ok = 1 fény), pár száz fénynél bőven elég
 		foreach (PointLight2D other in _lights)
 		{
 			if (other.Color == color && other.Position.DistanceTo(position) < 96)

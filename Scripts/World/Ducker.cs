@@ -1,7 +1,7 @@
 using Godot;
 
 // Amíg ez a hang szól, lehalkítja a helyiség zenéjét, utána visszaengedi.
-// ponytail: az AudioStreamPlayer-nek nincs "elindult" jelzése, ezért a Playing flaget
+// Az AudioStreamPlayer-nek nincs "elindult" jelzése, ezért a Playing flaget
 // figyeljük - így nem kell hozzányúlni ahhoz, aki elindítja (Npc.Sound).
 public partial class Ducker : AudioStreamPlayer
 {
