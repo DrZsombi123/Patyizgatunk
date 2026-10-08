@@ -1,7 +1,6 @@
 using Godot;
 
 // Menügomb: megnyomva a Scene jelenetre vált, üres Scene-nél kilép a játékból.
-// (A régi BackButton / OptionsButton / CreditsButton / ExitButton helyett.)
 public partial class SceneButton : Button
 {
 	[Export(PropertyHint.File, "*.tscn")]

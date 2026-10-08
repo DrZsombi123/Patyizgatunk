@@ -13,19 +13,19 @@ public partial class DrunkSystem : Node
 	public const float MaxDrunkness = 100f;
 
 	[ExportGroup("Thresholds (%)")]
-	[Export] public float NauseaStart = 30f;     // screen wobble begins
-	[Export] public float DisorientStart = 50f;  // slightly off movement
-	[Export] public float ChaosStart = 70f;      // insanely random movement
-	[Export] public float BlindStart = 90f;      // barely see
+	[Export] public float NauseaStart = 30f;     // innen hullámzik a kép
+	[Export] public float DisorientStart = 50f;  // innen kicsit elcsúszik az irány
+	[Export] public float ChaosStart = 70f;      // innen teljesen kaotikus a mozgás
+	[Export] public float BlindStart = 90f;      // innen alig látni
 
 	[ExportGroup("Sobering")]
-	[Export] public float SoberRate = 0.5f;      // % lost per second
+	[Export] public float SoberRate = 0.5f;      // ennyi %-ot józanodik másodpercenként
 
 	[ExportGroup("Blackout")]
 	[Export] public float BlackoutResetValue = 30f;
-	[Export] public float FadeOutTime = 1.0f;    // fade to black
-	[Export] public float BlackHoldTime = 2.5f;  // fully black
-	[Export] public float FadeInTime = 1.5f;     // wake up
+	[Export] public float FadeOutTime = 1.0f;    // elsötétülés
+	[Export] public float BlackHoldTime = 2.5f;  // teljesen fekete
+	[Export] public float FadeInTime = 1.5f;     // felébredés
 
 	[ExportGroup("Vomit")]
 	[Export] public Texture2D VomitTexture { get; set; }
@@ -41,7 +41,7 @@ public partial class DrunkSystem : Node
 	private readonly RandomNumberGenerator _rng = new();
 	private readonly List<Sprite2D> _puddles = new();
 
-	// movement-distortion state
+	// a mozgás torzításának állapota
 	private float _time;
 	private float _confusionTimer;
 	private float _randomAngle;
@@ -49,7 +49,7 @@ public partial class DrunkSystem : Node
 	private bool _stumbling;
 	private Vector2 _stumbleDir;
 
-	// driving-distortion state (kocsi)
+	// a vezetés torzításának állapota
 	private float _driveTimer;
 	private float _driveSteerOffset;
 	private float _driveThrottleScale = 1f;
@@ -66,7 +66,7 @@ public partial class DrunkSystem : Node
 		SetDrunkness(Drunkness - SoberRate * (float)delta);
 	}
 
-	// ---------- Public API (call from Player.cs) ----------
+	// ---------- kívülről hívható ----------
 
 	public void AddDrunk(float amount)
 	{
@@ -86,7 +86,7 @@ public partial class DrunkSystem : Node
 		float dt = (float)delta;
 		_time += dt;
 
-		// 50-70%: slightly disoriented. Direction slowly sways left/right.
+		// 50-70%: kicsit elveszti az irányt, a mozgás lassan jobbra-balra ring.
 		if (Drunkness < ChaosStart)
 		{
 			float t = Mathf.InverseLerp(DisorientStart, ChaosStart, Drunkness);
@@ -96,7 +96,7 @@ public partial class DrunkSystem : Node
 			return input.Rotated(sway) * speedWobble;
 		}
 
-		// 70%+: chaos. Every fraction of a second the "rules" change.
+		// 70%+: káosz, a másodperc törtrészenként változnak a "szabályok".
 		float chaos = Mathf.InverseLerp(ChaosStart, MaxDrunkness, Drunkness); // 0..1
 		_confusionTimer -= dt;
 		if (_confusionTimer <= 0f)
@@ -108,7 +108,7 @@ public partial class DrunkSystem : Node
 			_stumbleDir = Vector2.FromAngle(_rng.Randf() * Mathf.Tau);
 		}
 
-		// Stumbling: you drift even when not pressing anything.
+		// Botladozás: gomb nélkül is elsodródik.
 		if (input == Vector2.Zero)
 			return _stumbling ? _stumbleDir * 0.6f : Vector2.Zero;
 
@@ -158,7 +158,7 @@ public partial class DrunkSystem : Node
 		return "Fullgatya";
 	}
 
-	// ---------- Internals ----------
+	// ---------- belső működés ----------
 
 	private void SetDrunkness(float value)
 	{
@@ -176,18 +176,18 @@ public partial class DrunkSystem : Node
 	{
 		IsBlackedOut = true;
 
-		// 1) fade to black
+		// 1) elsötétül a kép
 		EmitSignal(SignalName.BlackoutStarted, FadeOutTime);
 		await Wait(FadeOutTime);
 
-		// 2) while the screen is black: drop the bar, move the player, leave a present
+		// 2) amíg fekete a kép: lecsökken a csík, a játékos máshol ébred, és ott marad egy tócsa
 		EmitSignal(SignalName.PassedOut);   // ha kocsiban ült, a Car itt engedi el a játékost
 		SetDrunkness(BlackoutResetValue);
 		MoveToRandomWakeSpot();
 		SpawnVomit();
 		await Wait(BlackHoldTime);
 
-		// 3) wake up
+		// 3) felébredés
 		EmitSignal(SignalName.BlackoutEnded, FadeInTime);
 		await Wait(FadeInTime);
 

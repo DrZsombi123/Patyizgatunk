@@ -1,8 +1,7 @@
 using Godot;
 
 // Győzelmi oldal: elértük a Player.WinAura-t -> buli a klubban, mindenki táncol.
-// A klub egy sötét háttér villogó fénnyel, nem a World klubjának másolata.
-// Ha kell a valódi belső tér, ide jöhet a klub tile-ja és a táncosok pozíciói.
+// A háttér egy sötét, színváltós diszkófény, előtte táncolnak a szereplők.
 public partial class Victory : Control
 {
 	private const float Zoom = 3.0f;

@@ -3,7 +3,7 @@ using Godot;
 // Küldetések egymás után: mindig egy aktív, felül középen látszik a haladással.
 // A játék többi része csak jelent, pl. Quests.Report("pia"). Teljesítéskor aura jár és jön a következő.
 // A Toast rövid felirat a képernyő tetején (küldetés kész, rendőrség...).
-// A UI kódból épül, mint a Dialogue - egy CanvasLayer node a World-ben.
+// A felület kódból épül (nincs hozzá .tscn), a World-ben egy CanvasLayer node.
 public partial class Quests : CanvasLayer
 {
 	public static Quests Current { get; private set; }
