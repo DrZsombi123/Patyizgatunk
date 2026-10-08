@@ -1862,6 +1862,22 @@ text = "F: beszállás"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="Lights" type="Node2D" parent="Merci" unique_id=1183027461]
+visible = false
+
+[node name="Head" type="PointLight2D" parent="Merci/Lights" unique_id=1407715932 groups=["night_lights"]]
+position = Vector2(0, -96)
+color = Color(1, 0.95, 0.8, 1)
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.2
+
+[node name="Tail" type="PointLight2D" parent="Merci/Lights" unique_id=1920586374 groups=["night_lights"]]
+position = Vector2(0, 36)
+color = Color(1, 0.15, 0.1, 1)
+energy = 0.6
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 0.4
+
 [node name="UltraPatyi" type="Area2D" parent="." unique_id=579911719]
 position = Vector2(720, 496)
 script = ExtResource("24_ultra")
